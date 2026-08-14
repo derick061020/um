@@ -21,6 +21,44 @@ PUBLICO="${1:-$(cd "$APP/.." && pwd)/public_html}"
 echo "→ Aplicación: $APP"
 echo "→ Carpeta pública: $PUBLICO"
 
+# --- ¿La raíz web ya tiene otra aplicación? ----------------------------------
+# Publicar encima de un WordPress deja sus archivos vivos: .htaccess de Laravel
+# solo reescribe lo que NO existe como archivo, así que wp-login.php, xmlrpc.php
+# y wp-admin/ seguirían ejecutándose, y wp-config.php lleva las credenciales de
+# su base de datos. Mejor detenerse y avisar.
+AJENOS=""
+for marca in wp-config.php wp-login.php wp-admin wp-includes configuration.php administrator; do
+    [ -e "$PUBLICO/$marca" ] && AJENOS="$AJENOS $marca"
+done
+
+if [ -n "$AJENOS" ] && [ "${FORZAR:-0}" != "1" ]; then
+    cat >&2 <<AVISO
+
+✗ La carpeta pública ya tiene otra aplicación instalada:
+   $AJENOS
+
+  Publicar encima NO la desactiva: esos archivos seguirían ejecutándose y
+  quedarían accesibles desde internet, incluido wp-config.php con las
+  credenciales de su base de datos.
+
+  Respáldala y quítala primero:
+
+     cd ~/domains/TUDOMINIO
+     tar -czf ~/respaldo-sitio-anterior.tar.gz public_html
+
+     cd public_html
+     mkdir -p ~/sitio-anterior
+     mv wp-admin wp-content wp-includes wp-*.php xmlrpc.php \\
+        readme.html license.txt ~/sitio-anterior/ 2>/dev/null
+
+  Y vuelve a ejecutar este script.
+
+  (Si sabes lo que haces y quieres continuar igual: FORZAR=1 bash scripts/desplegar.sh ...)
+
+AVISO
+    exit 1
+fi
+
 # --- PHP correcto ------------------------------------------------------------
 # En hosting compartido el `php` de la consola no siempre es el mismo que usa
 # el sitio. Se busca uno 8.3 o superior antes que nada.
