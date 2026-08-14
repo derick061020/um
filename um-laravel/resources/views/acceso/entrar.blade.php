@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#16402E">
     <title>Entrar · Mujeres Unidas</title>
     <link rel="icon" href="{{ asset('brand/um-principal.png') }}">
-    <link rel="stylesheet" href="{{ asset('css/um.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/um.css') }}?v={{ @filemtime(public_path('css/um.css')) ?: '1' }}">
 </head>
 <body>
 <main class="entrar">

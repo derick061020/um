@@ -9,7 +9,9 @@
     <link rel="icon" href="{{ asset('brand/um-principal.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('brand/um-principal.png') }}">
     <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
-    <link rel="stylesheet" href="{{ asset('css/um.css') }}">
+    {{-- La versión (mtime del archivo) fuerza al navegador a traer el CSS
+         nuevo tras cada despliegue, en vez de servir uno viejo cacheado. --}}
+    <link rel="stylesheet" href="{{ asset('css/um.css') }}?v={{ @filemtime(public_path('css/um.css')) ?: '1' }}">
 </head>
 <body>
 
@@ -99,7 +101,9 @@
         <a class="credito" href="mailto:kymesolutions@gmail.com"
            aria-label="Desarrollado por Kyme Solutions">
             <span class="credito-kicker">Desarrollado por</span>
-            <img src="{{ asset('brand/kyme-software.png') }}" alt="Kyme Solutions">
+            {{-- Alto fijado también en el HTML: inmune al CSS cacheado. --}}
+            <img src="{{ asset('brand/kyme-software.png') }}" alt="Kyme Solutions"
+                 height="52" style="height:52px;width:auto;display:block;">
         </a>
     </footer>
 </div>
