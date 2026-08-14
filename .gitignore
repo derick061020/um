@@ -15,7 +15,8 @@ dist/
 .env.local
 .env.*.local
 
-storage/
+# Anclado a la raíz: es el almacén del sistema Next.js, no el storage/ de Laravel.
+/storage/
 respaldos/
 
 *.log

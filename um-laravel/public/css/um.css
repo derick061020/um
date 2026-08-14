@@ -1,0 +1,268 @@
+/* Mujeres Unidas — hoja de estilo única, sin compilación.
+   Se sube tal cual por FTP: no hay Vite, ni npm, ni paso de build. */
+
+:root {
+    --patrimonio: #16402e;
+    --crecimiento: #2f6b50;
+    --salvia: #afc7b9;
+    --niebla: #e8ecea;
+    --tinta: #252a27;
+    --papel: #f7f9f8;
+    --alerta: #8c2f2f;
+    --alerta-suave: #fbeaea;
+    --bien: #1f6b3f;
+    --bien-suave: #e7f4ec;
+    --radio: 10px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: var(--papel);
+    color: var(--tinta);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+a { color: var(--crecimiento); }
+
+/* --- Barra superior ------------------------------------------------------ */
+
+.barra { background: var(--patrimonio); color: #fff; }
+
+.barra-interior {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    flex-wrap: wrap;
+}
+
+.marca { text-decoration: none; color: #fff; line-height: 1.15; }
+.marca-nombre { display: block; font-weight: 700; letter-spacing: 1px; font-size: 15px; }
+.marca-sub { display: block; font-size: 11px; color: var(--salvia); }
+
+.nav { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; }
+
+.nav a {
+    color: var(--niebla);
+    text-decoration: none;
+    padding: 7px 12px;
+    border-radius: var(--radio);
+    font-size: 14px;
+}
+
+.nav a:hover { background: rgba(255, 255, 255, .12); }
+.nav a.activo { background: var(--crecimiento); color: #fff; font-weight: 600; }
+
+.salir { display: flex; align-items: center; gap: 10px; }
+.quien { font-size: 13px; text-align: right; line-height: 1.2; }
+.quien small { display: block; color: var(--salvia); font-size: 11px; }
+
+.btn-plano {
+    background: transparent;
+    border: 1px solid var(--salvia);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: var(--radio);
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.btn-plano:hover { background: rgba(255, 255, 255, .12); }
+
+/* --- Estructura ---------------------------------------------------------- */
+
+.contenido { max-width: 1180px; margin: 0 auto; padding: 22px 18px 60px; }
+
+h1 { font-size: 24px; margin: 0 0 4px; color: var(--patrimonio); }
+h2 { font-size: 17px; margin: 26px 0 10px; color: var(--patrimonio); }
+.sub { color: #5d6a63; margin: 0 0 18px; font-size: 14px; }
+
+.tarjeta {
+    background: #fff;
+    border: 1px solid var(--niebla);
+    border-radius: var(--radio);
+    padding: 16px 18px;
+    margin-bottom: 16px;
+}
+
+.rejilla { display: grid; gap: 14px; }
+.rejilla-2 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.rejilla-3 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.rejilla-4 { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+
+/* --- Indicadores --------------------------------------------------------- */
+
+.dato {
+    background: #fff;
+    border: 1px solid var(--niebla);
+    border-left: 4px solid var(--crecimiento);
+    border-radius: var(--radio);
+    padding: 12px 14px;
+}
+
+.dato-etiqueta { font-size: 11px; letter-spacing: 1px; color: #5d6a63; text-transform: uppercase; }
+.dato-valor { font-size: 25px; font-weight: 700; color: var(--patrimonio); line-height: 1.2; }
+.dato-pie { font-size: 12px; color: #5d6a63; }
+
+.dato-grande .dato-valor { font-size: 46px; }
+.dato-alerta { border-left-color: var(--alerta); }
+.dato-alerta .dato-valor { color: var(--alerta); }
+
+/* --- Tablas -------------------------------------------------------------- */
+
+.tabla-envoltura { overflow-x: auto; }
+
+table.tabla { width: 100%; border-collapse: collapse; background: #fff; }
+
+table.tabla th {
+    text-align: left;
+    font-size: 11px;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    color: #5d6a63;
+    border-bottom: 2px solid var(--niebla);
+    padding: 9px 10px;
+    white-space: nowrap;
+}
+
+table.tabla td { border-bottom: 1px solid var(--niebla); padding: 9px 10px; }
+table.tabla tr:hover td { background: #fcfdfc; }
+
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+.apagado { color: #7b8781; }
+
+/* --- Etiquetas de estado ------------------------------------------------- */
+
+.etiqueta {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 9px;
+    border-radius: 999px;
+    letter-spacing: .4px;
+}
+
+.e-ACTIVO, .e-PAGADO { background: var(--bien-suave); color: var(--bien); }
+.e-VENCIDO { background: var(--alerta-suave); color: var(--alerta); }
+.e-LIQUIDADO { background: var(--niebla); color: var(--crecimiento); }
+.e-CANCELADO { background: var(--niebla); color: #7b8781; }
+.e-PENDIENTE { background: var(--niebla); color: #5d6a63; }
+.e-PARCIAL { background: #fdf3e3; color: #8a5a12; }
+
+/* --- Formularios --------------------------------------------------------- */
+
+label { display: block; font-size: 12px; color: #5d6a63; margin-bottom: 3px; letter-spacing: .3px; }
+
+input[type=text], input[type=password], input[type=date], input[type=number],
+input[type=tel], select, textarea {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid var(--salvia);
+    border-radius: var(--radio);
+    font-size: 15px;
+    font-family: inherit;
+    background: #fff;
+    color: var(--tinta);
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: 2px solid var(--crecimiento);
+    outline-offset: -1px;
+    border-color: var(--crecimiento);
+}
+
+.campo { margin-bottom: 12px; }
+.pista { font-size: 12px; color: #7b8781; margin-top: 3px; }
+
+.btn {
+    display: inline-block;
+    background: var(--patrimonio);
+    color: #fff;
+    border: 0;
+    padding: 10px 18px;
+    border-radius: var(--radio);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn:hover { background: var(--crecimiento); }
+.btn-secundario { background: #fff; color: var(--patrimonio); border: 1px solid var(--salvia); }
+.btn-secundario:hover { background: var(--niebla); }
+.btn-peligro { background: var(--alerta); }
+.btn-peligro:hover { background: #a83a3a; }
+.btn-chico { padding: 6px 12px; font-size: 13px; }
+
+/* Botón de cobro: grande, para marcar con el dedo en la tablet. */
+.btn-cobro {
+    width: 100%;
+    min-height: 46px;
+    font-size: 16px;
+    background: var(--bien);
+}
+
+.btn-cobro:hover { background: #175733; }
+.btn-cobro[disabled] { background: var(--niebla); color: #7b8781; cursor: default; }
+
+/* --- Avisos -------------------------------------------------------------- */
+
+.aviso { padding: 11px 14px; border-radius: var(--radio); margin-bottom: 16px; font-size: 14px; }
+.aviso-bien { background: var(--bien-suave); color: var(--bien); border: 1px solid #bfe0cc; }
+.aviso-mal { background: var(--alerta-suave); color: var(--alerta); border: 1px solid #edc9c9; }
+.aviso-ojo { background: #fdf3e3; color: #8a5a12; border: 1px solid #ecd9b4; }
+
+/* --- Acceso -------------------------------------------------------------- */
+
+.acceso {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--patrimonio);
+    padding: 20px;
+}
+
+.acceso-caja { background: #fff; border-radius: 14px; padding: 30px 28px; width: 100%; max-width: 380px; }
+.acceso-marca { text-align: center; margin-bottom: 22px; }
+.acceso-marca strong { display: block; font-size: 19px; color: var(--patrimonio); letter-spacing: 1px; }
+.acceso-marca span { font-size: 13px; color: #5d6a63; }
+
+/* --- Expediente / escáner ------------------------------------------------ */
+
+.documentos { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.documento { border: 1px solid var(--niebla); border-radius: var(--radio); overflow: hidden; background: #fff; }
+.documento img { width: 100%; height: 110px; object-fit: cover; display: block; background: var(--niebla); }
+.documento .pie-doc { padding: 7px 9px; font-size: 12px; }
+
+.faltantes { background: #fdf3e3; border: 1px solid #ecd9b4; color: #8a5a12; padding: 11px 14px; border-radius: var(--radio); }
+
+#camara-vista { width: 100%; max-height: 60vh; background: #000; border-radius: var(--radio); display: block; }
+.guia { border: 2px dashed var(--salvia); border-radius: var(--radio); padding: 10px; margin-top: 10px; }
+
+/* --- Paginación ---------------------------------------------------------- */
+
+.paginacion { margin-top: 16px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.paginacion a, .paginacion span {
+    padding: 6px 11px;
+    border-radius: var(--radio);
+    border: 1px solid var(--niebla);
+    text-decoration: none;
+    font-size: 13px;
+    background: #fff;
+}
+.paginacion .activo { background: var(--patrimonio); color: #fff; border-color: var(--patrimonio); }
+
+/* --- Impresión ----------------------------------------------------------- */
+
+@media print {
+    .barra, .no-imprimir { display: none !important; }
+    body { background: #fff; }
+    .contenido { max-width: none; padding: 0; }
+}
