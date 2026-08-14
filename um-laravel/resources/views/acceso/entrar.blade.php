@@ -72,7 +72,9 @@
             <a class="credito credito-acceso" href="mailto:kymesolutions@gmail.com"
                aria-label="Desarrollado por Kyme Solutions">
                 <span class="credito-kicker">Desarrollado por</span>
-                <img src="{{ asset('brand/kyme-software.png') }}" alt="Kyme Solutions">
+                {{-- Alto fijado también en el HTML: inmune al CSS cacheado. --}}
+                <img src="{{ asset('brand/kyme-software.png') }}" alt="Kyme Solutions"
+                     height="46" style="height:46px;width:auto;display:block;">
             </a>
         </div>
     </section>
