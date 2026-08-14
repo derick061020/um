@@ -1,3 +1,13 @@
+# Nunca cachear el sistema a nivel de servidor.
+#
+# Hostinger usa LiteSpeed, que puede guardar páginas ya generadas. En un sitio
+# de noticias eso es bueno; en un CRM es un fallo grave: la caché podría
+# entregarle a una persona la pantalla de otra, con los datos de las clientas.
+# Las páginas dependen de quién entró, así que ninguna se guarda.
+<IfModule LiteSpeed>
+    CacheDisable public /
+</IfModule>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes

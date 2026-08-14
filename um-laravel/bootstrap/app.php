@@ -16,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'puede' => \App\Http\Middleware\ExigirPermiso::class,
         ]);
 
+        // Ninguna pantalla se cachea: todas dependen de quién inició sesión.
+        $middleware->appendToGroup('web', \App\Http\Middleware\SinCache::class);
+
         $middleware->redirectGuestsTo('/entrar');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
