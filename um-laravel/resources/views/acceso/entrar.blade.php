@@ -68,6 +68,12 @@
 
                 <button type="submit" class="btn btn-ancho">Entrar</button>
             </form>
+
+            <a class="credito credito-acceso" href="https://kymesoftware.com" target="_blank"
+               rel="noopener" aria-label="Desarrollado por Kyme Solutions">
+                <span class="credito-kicker">Desarrollado por</span>
+                <img src="{{ asset('brand/kyme-software.png') }}" alt="Kyme Solutions">
+            </a>
         </div>
     </section>
 

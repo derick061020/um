@@ -94,7 +94,13 @@
     </main>
 
     <footer class="pie">
-        Mujeres Unidas · Sistema interno de control de crédito
+        <p class="pie-linea">Mujeres Unidas · Sistema interno de control de crédito</p>
+
+        <a class="credito" href="https://kymesoftware.com" target="_blank" rel="noopener"
+           aria-label="Desarrollado por Kyme Solutions">
+            <span class="credito-kicker">Desarrollado por</span>
+            <img src="{{ asset('brand/kyme-software.png') }}" alt="Kyme Solutions">
+        </a>
     </footer>
 </div>
 

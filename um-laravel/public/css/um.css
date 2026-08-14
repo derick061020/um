@@ -188,11 +188,49 @@ a { color: var(--crecimiento); }
 
 .pie {
     border-top: 1px solid var(--niebla);
-    padding: 1.5rem 1rem;
+    padding: 1.75rem 1rem 2rem;
     text-align: center;
+}
+
+.pie-linea {
+    margin: 0;
     font-size: .75rem;
     color: rgba(37, 42, 39, .4);
 }
+
+/* Crédito del desarrollador: presencia discreta, sin competir con la marca
+   de Mujeres Unidas. Fondo transparente y el logo apenas atenuado. */
+.credito {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .4rem;
+    margin-top: 1.1rem;
+    text-decoration: none;
+    opacity: .78;
+    transition: opacity .2s ease;
+}
+.credito:hover { opacity: 1; }
+
+.credito-kicker {
+    font-size: .625rem;
+    text-transform: uppercase;
+    letter-spacing: .22em;
+    color: rgba(37, 42, 39, .45);
+}
+
+.credito img {
+    height: 52px;
+    width: auto;
+    display: block;
+}
+
+/* En el acceso va más discreto todavía, separado de la caja del formulario. */
+.credito-acceso {
+    display: flex;
+    margin: 2.5rem auto 0;
+}
+.credito-acceso img { height: 46px; }
 
 .titulo { margin-bottom: 1.5rem; }
 .titulo h1 {
