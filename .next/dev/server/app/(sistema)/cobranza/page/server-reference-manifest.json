@@ -1,0 +1,49 @@
+{
+  "node": {
+    "001737ba0a54f32cf0da0b589e32ebb4a13f1225db": {
+      "workers": {
+        "app/(sistema)/cobranza/page": {
+          "moduleId": "[project]/.next-internal/server/app/(sistema)/cobranza/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/(sistema)/acciones.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/(sistema)/cobranza/acciones.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "salir",
+      "filename": "src/app/(sistema)/acciones.ts"
+    },
+    "60bb6d6078004b920c676352d1bfed279314bb049b": {
+      "workers": {
+        "app/(sistema)/cobranza/page": {
+          "moduleId": "[project]/.next-internal/server/app/(sistema)/cobranza/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/(sistema)/acciones.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/(sistema)/cobranza/acciones.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "anularAbono",
+      "filename": "src/app/(sistema)/cobranza/acciones.ts"
+    },
+    "60fae0b4b4c7f407c554fd8e501cd9ca951603e77d": {
+      "workers": {
+        "app/(sistema)/cobranza/page": {
+          "moduleId": "[project]/.next-internal/server/app/(sistema)/cobranza/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/(sistema)/acciones.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/(sistema)/cobranza/acciones.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "abonoParcial",
+      "filename": "src/app/(sistema)/cobranza/acciones.ts"
+    },
+    "6050edc0034941793798f8256c20cb7669127f82d8": {
+      "workers": {
+        "app/(sistema)/cobranza/page": {
+          "moduleId": "[project]/.next-internal/server/app/(sistema)/cobranza/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/(sistema)/acciones.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/(sistema)/cobranza/acciones.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "marcarAbono",
+      "filename": "src/app/(sistema)/cobranza/acciones.ts"
+    }
+  },
+  "edge": {}
+}

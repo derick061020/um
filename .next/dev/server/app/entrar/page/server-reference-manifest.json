@@ -1,0 +1,16 @@
+{
+  "node": {
+    "60bdf595e6372a6ccf375d7cf87296c48a64e8ef91": {
+      "workers": {
+        "app/entrar/page": {
+          "moduleId": "[project]/.next-internal/server/app/entrar/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/entrar/acciones.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "entrar",
+      "filename": "src/app/entrar/acciones.ts"
+    }
+  },
+  "edge": {}
+}

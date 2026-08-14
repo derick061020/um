@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/src/app/serifdisplay_b5c4483a.module.css"],"sourcesContent":["@font-face {\n    \nfont-family: 'serifDisplay';\n    src: url('@vercel/turbopack-next/internal/font/local/font?{%22path%22:%22../../assets/fonts/DMSerifDisplay-Regular.ttf%22,%22preload%22:true,%22has_size_adjust%22:true}') format('truetype');\n    font-display: swap;\n    \nfont-weight: 400;\nfont-style: normal;\n}\n\n@font-face {\n    font-family: 'serifDisplay Fallback';\n    src: local(\"Arial\");\n    ascent-override: 102.23%;\ndescent-override: 33.06%;\nline-gap-override: 0.00%;\nsize-adjust: 101.35%;\n\n}\n\n.className {\n    font-family: 'serifDisplay', 'serifDisplay Fallback';\n    \n}\n.variable {\n    --fuente-serif-display: 'serifDisplay', 'serifDisplay Fallback';\n}\n\n"],"names":[],"mappings":"AAAA;;;;;;;;AAUA;;;;;;;;;AAUA;;;;AAIA"}}]
+}

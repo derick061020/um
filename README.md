@@ -171,8 +171,13 @@ reverso y comprobante de domicilio).
 
 ## 7. Despliegue en el servidor
 
-**Guía completa paso a paso: [`DESPLIEGUE-HOSTINGER.md`](DESPLIEGUE-HOSTINGER.md)**
-(dominio, HTTPS, firewall y respaldos). Resumen:
+Dos guías completas, según prefieras:
+
+- **[`DESPLIEGUE-HOSTINGER.md`](DESPLIEGUE-HOSTINGER.md)** — con Docker (recomendada).
+- **[`DESPLIEGUE-SIN-DOCKER.md`](DESPLIEGUE-SIN-DOCKER.md)** — Node.js y PostgreSQL
+  instalados directos, con `systemd` y Nginx.
+
+Resumen de la primera:
 
 ```bash
 # en el servidor, dentro de /opt/um-crm

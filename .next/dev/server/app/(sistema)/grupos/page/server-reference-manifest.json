@@ -1,0 +1,49 @@
+{
+  "node": {
+    "001737ba0a54f32cf0da0b589e32ebb4a13f1225db": {
+      "workers": {
+        "app/(sistema)/grupos/page": {
+          "moduleId": "[project]/.next-internal/server/app/(sistema)/grupos/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/(sistema)/acciones.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/(sistema)/grupos/acciones.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "salir",
+      "filename": "src/app/(sistema)/acciones.ts"
+    },
+    "60033e6f7b334269b193ad27772b274e75318b1023": {
+      "workers": {
+        "app/(sistema)/grupos/page": {
+          "moduleId": "[project]/.next-internal/server/app/(sistema)/grupos/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/(sistema)/acciones.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/(sistema)/grupos/acciones.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "actualizarGrupo",
+      "filename": "src/app/(sistema)/grupos/acciones.ts"
+    },
+    "60355150e9023dbf467f7f0a9d8c3cea0383d49961": {
+      "workers": {
+        "app/(sistema)/grupos/page": {
+          "moduleId": "[project]/.next-internal/server/app/(sistema)/grupos/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/(sistema)/acciones.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/(sistema)/grupos/acciones.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "cambiarEstadoGrupo",
+      "filename": "src/app/(sistema)/grupos/acciones.ts"
+    },
+    "6074bb3d60cf7c8b3ae8f67ebb1feee777a588c134": {
+      "workers": {
+        "app/(sistema)/grupos/page": {
+          "moduleId": "[project]/.next-internal/server/app/(sistema)/grupos/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/(sistema)/acciones.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/(sistema)/grupos/acciones.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "crearGrupo",
+      "filename": "src/app/(sistema)/grupos/acciones.ts"
+    }
+  },
+  "edge": {}
+}

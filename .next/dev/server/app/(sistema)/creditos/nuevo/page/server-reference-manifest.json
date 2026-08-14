@@ -1,0 +1,27 @@
+{
+  "node": {
+    "001737ba0a54f32cf0da0b589e32ebb4a13f1225db": {
+      "workers": {
+        "app/(sistema)/creditos/nuevo/page": {
+          "moduleId": "[project]/.next-internal/server/app/(sistema)/creditos/nuevo/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/(sistema)/acciones.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/(sistema)/creditos/acciones.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "salir",
+      "filename": "src/app/(sistema)/acciones.ts"
+    },
+    "60b616ceb19a486cf4796392d4628c4f7f9990199a": {
+      "workers": {
+        "app/(sistema)/creditos/nuevo/page": {
+          "moduleId": "[project]/.next-internal/server/app/(sistema)/creditos/nuevo/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/(sistema)/acciones.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/(sistema)/creditos/acciones.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "registrarCredito",
+      "filename": "src/app/(sistema)/creditos/acciones.ts"
+    }
+  },
+  "edge": {}
+}

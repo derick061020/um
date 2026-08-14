@@ -1,0 +1,27 @@
+/* [project]/src/app/serifdisplay_b5c4483a.module.css [app-client] (css) */
+@font-face {
+  font-family: serifDisplay;
+  src: url("../media/DMSerifDisplay_Regular-s.p.1cwgd45cshhpi.ttf") format("truetype");
+  font-display: swap;
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: serifDisplay Fallback;
+  src: local(Arial);
+  ascent-override: 102.23%;
+  descent-override: 33.06%;
+  line-gap-override: 0.0%;
+  size-adjust: 101.35%;
+}
+
+.serifdisplay_b5c4483a-module___8lP5W__className {
+  font-family: serifDisplay, serifDisplay Fallback;
+}
+
+.serifdisplay_b5c4483a-module___8lP5W__variable {
+  --fuente-serif-display: "serifDisplay", "serifDisplay Fallback";
+}
+
+/*# sourceMappingURL=src_app_serifdisplay_b5c4483a_module_css_1igg3k2._.single.css.map*/

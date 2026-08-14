@@ -1,0 +1,43 @@
+/* [project]/src/app/sans_29f0fda8.module.css [app-client] (css) */
+@font-face {
+  font-family: sans;
+  src: url("../media/DMSans_Regular-s.p.1ak_r0qwk4efr.ttf") format("truetype");
+  font-display: swap;
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: sans;
+  src: url("../media/DMSans_Medium-s.p.2r2fipdt7dpwy.ttf") format("truetype");
+  font-display: swap;
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: sans;
+  src: url("../media/DMSans_Bold-s.p.10xgmchs6okr4.ttf") format("truetype");
+  font-display: swap;
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: sans Fallback;
+  src: local(Arial);
+  ascent-override: 94.36%;
+  descent-override: 29.49%;
+  line-gap-override: 0.0%;
+  size-adjust: 105.13%;
+}
+
+.sans_29f0fda8-module__yQCCIG__className {
+  font-family: sans, sans Fallback;
+}
+
+.sans_29f0fda8-module__yQCCIG__variable {
+  --fuente-sans: "sans", "sans Fallback";
+}
+
+/*# sourceMappingURL=src_app_sans_29f0fda8_module_css_1igg3k2._.single.css.map*/

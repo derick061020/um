@@ -1,0 +1,16 @@
+{
+  "node": {
+    "001737ba0a54f32cf0da0b589e32ebb4a13f1225db": {
+      "workers": {
+        "app/(sistema)/clientas/page": {
+          "moduleId": "[project]/.next-internal/server/app/(sistema)/clientas/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/(sistema)/acciones.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "salir",
+      "filename": "src/app/(sistema)/acciones.ts"
+    }
+  },
+  "edge": {}
+}

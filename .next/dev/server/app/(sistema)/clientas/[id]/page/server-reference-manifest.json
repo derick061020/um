@@ -1,0 +1,60 @@
+{
+  "node": {
+    "001737ba0a54f32cf0da0b589e32ebb4a13f1225db": {
+      "workers": {
+        "app/(sistema)/clientas/[id]/page": {
+          "moduleId": "[project]/.next-internal/server/app/(sistema)/clientas/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/(sistema)/acciones.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/(sistema)/clientas/acciones.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/app/(sistema)/clientas/[id]/documentos.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "salir",
+      "filename": "src/app/(sistema)/acciones.ts"
+    },
+    "60b6441e0823bbd235e9f26ff3154770dd986373e1": {
+      "workers": {
+        "app/(sistema)/clientas/[id]/page": {
+          "moduleId": "[project]/.next-internal/server/app/(sistema)/clientas/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/(sistema)/acciones.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/(sistema)/clientas/acciones.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/app/(sistema)/clientas/[id]/documentos.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "crearClienta",
+      "filename": "src/app/(sistema)/clientas/acciones.ts"
+    },
+    "60d64e4f25046dfb3bdd880c629651d79177d5ab74": {
+      "workers": {
+        "app/(sistema)/clientas/[id]/page": {
+          "moduleId": "[project]/.next-internal/server/app/(sistema)/clientas/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/(sistema)/acciones.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/(sistema)/clientas/acciones.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/app/(sistema)/clientas/[id]/documentos.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "actualizarClienta",
+      "filename": "src/app/(sistema)/clientas/acciones.ts"
+    },
+    "601570ccf199b13bf2315b41ef5d1e4d1671af7ccb": {
+      "workers": {
+        "app/(sistema)/clientas/[id]/page": {
+          "moduleId": "[project]/.next-internal/server/app/(sistema)/clientas/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/(sistema)/acciones.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/(sistema)/clientas/acciones.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/app/(sistema)/clientas/[id]/documentos.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "borrarDocumento",
+      "filename": "src/app/(sistema)/clientas/[id]/documentos.ts"
+    },
+    "60a04872fa72f7e36de0dec4569ee4b089d7b4ef35": {
+      "workers": {
+        "app/(sistema)/clientas/[id]/page": {
+          "moduleId": "[project]/.next-internal/server/app/(sistema)/clientas/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/(sistema)/acciones.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/(sistema)/clientas/acciones.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/app/(sistema)/clientas/[id]/documentos.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "subirDocumento",
+      "filename": "src/app/(sistema)/clientas/[id]/documentos.ts"
+    }
+  },
+  "edge": {}
+}

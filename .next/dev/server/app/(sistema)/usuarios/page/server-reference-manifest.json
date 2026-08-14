@@ -1,0 +1,49 @@
+{
+  "node": {
+    "001737ba0a54f32cf0da0b589e32ebb4a13f1225db": {
+      "workers": {
+        "app/(sistema)/usuarios/page": {
+          "moduleId": "[project]/.next-internal/server/app/(sistema)/usuarios/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/(sistema)/acciones.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/(sistema)/usuarios/acciones.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "salir",
+      "filename": "src/app/(sistema)/acciones.ts"
+    },
+    "6036af14b61cceb76d467fb7b1bfe186acab1a229d": {
+      "workers": {
+        "app/(sistema)/usuarios/page": {
+          "moduleId": "[project]/.next-internal/server/app/(sistema)/usuarios/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/(sistema)/acciones.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/(sistema)/usuarios/acciones.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "cambiarEstadoUsuario",
+      "filename": "src/app/(sistema)/usuarios/acciones.ts"
+    },
+    "60cdfc2c8be9e9164094e2972c30c6c832e2beeb23": {
+      "workers": {
+        "app/(sistema)/usuarios/page": {
+          "moduleId": "[project]/.next-internal/server/app/(sistema)/usuarios/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/(sistema)/acciones.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/(sistema)/usuarios/acciones.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "crearUsuario",
+      "filename": "src/app/(sistema)/usuarios/acciones.ts"
+    },
+    "60f53b525bf59099a7f6cb8554bc87ec7af0d02bec": {
+      "workers": {
+        "app/(sistema)/usuarios/page": {
+          "moduleId": "[project]/.next-internal/server/app/(sistema)/usuarios/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/(sistema)/acciones.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/(sistema)/usuarios/acciones.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "restablecerPassword",
+      "filename": "src/app/(sistema)/usuarios/acciones.ts"
+    }
+  },
+  "edge": {}
+}
