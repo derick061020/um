@@ -5,10 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Abono;
 use App\Models\Cliente;
 use App\Models\Credito;
-use App\Models\Grupo;
+use App\Models\Pago;
 use App\Services\CreditoService;
 use App\Support\Fechas;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class PanelController extends Controller
@@ -19,50 +19,52 @@ class PanelController extends Controller
         // tarea programada, que en hosting compartido no siempre existe.
         $servicio->actualizarVencidos();
 
-        $sabado = Fechas::sabadoDeCobro();
-        $sabadoISO = $sabado->format('Y-m-d');
+        $referencia = Fechas::hoy();
+        $sabado = Fechas::sabadoDeCobro($referencia);
 
-        $delSabado = Abono::whereDate('fecha_programada', $sabadoISO)->get();
+        $abiertos = ['ACTIVO', 'VENCIDO'];
 
-        $porCobrar = (int) $delSabado->sum('monto_esperado');
-        $cobrado = (int) $delSabado->sum('monto_pagado');
+        $abonosSabado = Abono::whereDate('fecha_programada', $sabado->format('Y-m-d'))
+            ->whereHas('credito', fn ($q) => $q->whereIn('estado', $abiertos))
+            ->get(['monto_esperado', 'monto_pagado']);
 
-        $activos = Credito::where('estado', 'ACTIVO')->count();
-        $vencidos = Credito::where('estado', 'VENCIDO')->count();
-        $liquidados = Credito::where('estado', 'LIQUIDADO')->count();
+        // Cartera activa: lo que falta por cobrar de los créditos vigentes.
+        $carteraActiva = 0;
+        $activos = Credito::where('estado', 'ACTIVO')
+            ->withSum('abonos as pagado', 'monto_pagado')
+            ->get(['id', 'monto_total']);
 
-        $carteraActiva = (int) Credito::whereIn('estado', ['ACTIVO', 'VENCIDO'])->sum('monto_total');
-        $cobradoTotal = (int) Abono::whereHas('credito', function ($q) {
-            $q->whereIn('estado', ['ACTIVO', 'VENCIDO']);
-        })->sum('monto_pagado');
+        foreach ($activos as $c) {
+            $carteraActiva += max(0, $c->monto_total - (int) $c->pagado);
+        }
 
-        // Atrasos: abonos ya vencidos que no están pagados.
-        $hoyISO = Fechas::hoy()->format('Y-m-d');
-        $atrasados = Abono::whereDate('fecha_programada', '<', $hoyISO)
+        $atrasoTotal = 0;
+        $atrasados = Abono::whereDate('fecha_programada', '<', $referencia->format('Y-m-d'))
             ->where('estado', '!=', 'PAGADO')
-            ->with(['credito.cliente:id,nombre,folio', 'credito.grupo:id,nombre'])
-            ->orderBy('fecha_programada')
-            ->limit(15)
-            ->get();
+            ->whereHas('credito', fn ($q) => $q->whereIn('estado', $abiertos))
+            ->get(['monto_esperado', 'monto_pagado']);
 
-        $montoAtrasado = (int) Abono::whereDate('fecha_programada', '<', $hoyISO)
-            ->where('estado', '!=', 'PAGADO')
-            ->sum(DB::raw('monto_esperado - monto_pagado'));
+        foreach ($atrasados as $a) {
+            $atrasoTotal += $a->monto_esperado - $a->monto_pagado;
+        }
 
         return view('panel.index', [
+            'nombre' => explode(' ', Auth::user()->nombre)[0],
+            'referencia' => $referencia,
             'sabado' => $sabado,
-            'porCobrar' => $porCobrar,
-            'cobrado' => $cobrado,
-            'activos' => $activos,
-            'vencidos' => $vencidos,
-            'liquidados' => $liquidados,
+            'esperadoSabado' => (int) $abonosSabado->sum('monto_esperado'),
+            'cobradoSabado' => (int) $abonosSabado->sum('monto_pagado'),
             'carteraActiva' => $carteraActiva,
-            'cobradoTotal' => $cobradoTotal,
-            'saldoCartera' => max(0, $carteraActiva - $cobradoTotal),
+            'creditosActivos' => $activos->count(),
+            'atrasoTotal' => $atrasoTotal,
+            'vencidos' => Credito::where('estado', 'VENCIDO')->count(),
             'clientas' => Cliente::where('activo', true)->count(),
-            'grupos' => Grupo::where('activo', true)->count(),
-            'atrasados' => $atrasados,
-            'montoAtrasado' => $montoAtrasado,
+            'ultimos' => Pago::where('anulado', false)
+                ->with(['registradoPor:id,nombre', 'credito:id,cliente_id', 'credito.cliente:id,nombre'])
+                ->orderByDesc('created_at')
+                ->orderByDesc('id')
+                ->limit(8)
+                ->get(),
         ]);
     }
 }

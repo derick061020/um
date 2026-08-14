@@ -30,3 +30,7 @@ tsconfig.tsbuildinfo
 # Generados automáticamente por Next.js en cada arranque
 AGENTS.md
 CLAUDE.md
+
+# Caché del servidor de desarrollo de Next.js (Next 16 la pone aquí).
+# Llega a cientos de MB: GitHub rechaza archivos de más de 100 MB.
+.next/dev/

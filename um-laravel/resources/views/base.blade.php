@@ -1,76 +1,102 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-MX">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#16402E">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('titulo', 'Sistema') · {{ config('app.name') }}</title>
+    <title>@yield('titulo', 'Control de crédito') · Mujeres Unidas</title>
+    <link rel="icon" href="{{ asset('brand/um-principal.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('brand/um-principal.png') }}">
+    <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
     <link rel="stylesheet" href="{{ asset('css/um.css') }}">
 </head>
 <body>
 
-@auth
-    <header class="barra">
-        <div class="barra-interior">
-            <a href="{{ Auth::user()->rutaInicio() }}" class="marca">
-                <span class="marca-nombre">MUJERES UNIDAS</span>
-                <span class="marca-sub">Control de crédito</span>
-            </a>
+@php
+    // El menú es el mismo del sistema anterior, en el mismo orden.
+    $menu = collect([
+        ['ruta' => 'panel',     'texto' => 'Panel',         'permiso' => 'reportes.ver'],
+        ['ruta' => 'corte',     'texto' => 'Cobro del día', 'permiso' => 'corte.dia'],
+        ['ruta' => 'cobranza',  'texto' => 'Cobranza',      'permiso' => 'cobranza.ver'],
+        ['ruta' => 'clientas',  'texto' => 'Clientas',      'permiso' => 'clientas.ver'],
+        ['ruta' => 'creditos',  'texto' => 'Créditos',      'permiso' => 'creditos.ver'],
+        ['ruta' => 'grupos',    'texto' => 'Grupos',        'permiso' => 'grupos.ver'],
+        ['ruta' => 'usuarios',  'texto' => 'Usuarios',      'permiso' => 'usuarios.ver'],
+        ['ruta' => 'bitacora',  'texto' => 'Bitácora',      'permiso' => 'auditoria.ver'],
+    ])->filter(fn ($m) => auth()->check() && auth()->user()->puede($m['permiso']));
 
-            <nav class="nav">
-                @can('reportes.ver')
-                    <a href="{{ route('panel') }}" @class(['activo' => request()->is('panel')])>Panel</a>
-                @endcan
-                @can('cobranza.ver')
-                    <a href="{{ route('cobranza') }}" @class(['activo' => request()->is('cobranza')])>Cobranza</a>
-                @endcan
-                @can('corte.dia')
-                    <a href="{{ route('corte') }}" @class(['activo' => request()->is('corte')])>Corte</a>
-                @endcan
-                @can('clientas.ver')
-                    <a href="{{ route('clientas') }}" @class(['activo' => request()->is('clientas*')])>Clientas</a>
-                @endcan
-                @can('creditos.ver')
-                    <a href="{{ route('creditos') }}" @class(['activo' => request()->is('creditos*')])>Créditos</a>
-                @endcan
-                @can('grupos.ver')
-                    <a href="{{ route('grupos') }}" @class(['activo' => request()->is('grupos')])>Grupos</a>
-                @endcan
-                @can('usuarios.ver')
-                    <a href="{{ route('usuarios') }}" @class(['activo' => request()->is('usuarios')])>Usuarios</a>
-                @endcan
-                @can('auditoria.ver')
-                    <a href="{{ route('bitacora') }}" @class(['activo' => request()->is('bitacora')])>Bitácora</a>
-                @endcan
-            </nav>
+    $iniciales = auth()->check()
+        ? collect(preg_split('/\s+/', trim(auth()->user()->nombre)))
+            ->take(2)
+            ->map(fn ($p) => mb_strtoupper(mb_substr($p, 0, 1)))
+            ->implode('')
+        : '';
+@endphp
 
-            <form method="POST" action="{{ route('salir') }}" class="salir">
-                @csrf
-                <span class="quien">
-                    {{ Auth::user()->nombre }}
-                    <small>{{ Auth::user()->etiquetaRol() }}</small>
-                </span>
-                <button type="submit" class="btn-plano">Salir</button>
-            </form>
-        </div>
-    </header>
-@endauth
+<div style="min-height:100dvh;">
+    @auth
+        <header class="cabecera">
+            <div class="cabecera-fila">
+                <a href="{{ auth()->user()->rutaInicio() }}" class="logo" aria-label="Inicio">
+                    <img src="{{ asset('brand/um-principal.png') }}" alt="Mujeres Unidas">
+                </a>
 
-<main class="contenido">
-    @if (session('exito'))
-        <div class="aviso aviso-bien">{{ session('exito') }}</div>
-    @endif
+                <div class="identidad">
+                    <div class="quien">
+                        <strong>{{ auth()->user()->nombre }}</strong>
+                        <span>{{ auth()->user()->etiquetaRol() }}</span>
+                    </div>
 
-    @if ($errors->any())
-        <div class="aviso aviso-mal">
-            @foreach ($errors->all() as $error)
-                <div>{{ $error }}</div>
-            @endforeach
-        </div>
-    @endif
+                    <div class="iniciales" aria-hidden="true">{{ $iniciales }}</div>
 
-    @yield('contenido')
-</main>
+                    <form method="POST" action="{{ route('salir') }}">
+                        @csrf
+                        <button type="submit" class="btn-fantasma" style="padding:.5rem .75rem; font-size:.75rem;">
+                            Salir
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            @if ($menu->count() > 1)
+                <nav class="nav">
+                    <ul>
+                        @foreach ($menu as $m)
+                            <li>
+                                <a href="{{ route($m['ruta']) }}"
+                                   @class(['activo' => request()->is($m['ruta'], $m['ruta'].'/*')])
+                                   @if (request()->is($m['ruta'], $m['ruta'].'/*')) aria-current="page" @endif>
+                                    {{ $m['texto'] }}
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </nav>
+            @endif
+        </header>
+    @endauth
+
+    <main class="contenido marca-agua">
+        @if (session('exito'))
+            <div class="aviso aviso-exito">{{ session('exito') }}</div>
+        @endif
+
+        @if ($errors->any())
+            <div class="aviso aviso-error" role="alert">
+                @foreach ($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
+            </div>
+        @endif
+
+        @yield('contenido')
+    </main>
+
+    <footer class="pie">
+        Mujeres Unidas · Sistema interno de control de crédito
+    </footer>
+</div>
 
 @stack('scripts')
 </body>

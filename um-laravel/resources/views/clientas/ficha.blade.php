@@ -1,162 +1,201 @@
 @extends('base')
 @section('titulo', $clienta->nombre)
 
+@php
+    use App\Support\Dinero;
+    use App\Support\Documentos;
+@endphp
+
 @section('contenido')
-    <h1>{{ $clienta->nombre }}</h1>
-    <p class="sub">
-        Folio {{ $clienta->folioFormateado() }}
-        @if ($clienta->grupo) · {{ $clienta->grupo->nombre }} @endif
-        @unless ($clienta->activo) · <span class="etiqueta e-CANCELADO">inactiva</span> @endunless
-    </p>
+    <nav class="migas">
+        <a href="{{ route('clientas') }}">Clientas</a>
+        <span aria-hidden="true">/</span>
+        <span class="actual">{{ $clienta->nombre }}</span>
+    </nav>
+
+    <div style="display:flex; justify-content:space-between; align-items:start; gap:1rem; flex-wrap:wrap;">
+        <div class="titulo">
+            <h1>{{ $clienta->nombre }}</h1>
+            <p>
+                Folio {{ $clienta->folioFormateado() }}
+                @if ($clienta->grupo) · {{ $clienta->grupo->nombre }} @endif
+                @unless ($clienta->activo)
+                    · <span class="insignia insignia-neutro">inactiva</span>
+                @endunless
+            </p>
+        </div>
+        @can('creditos.crear')
+            <a href="{{ route('creditos.nuevo', ['clienta' => $clienta->id]) }}" class="btn">Dar crédito</a>
+        @endcan
+    </div>
 
     @if ($faltantes)
-        <div class="faltantes">
+        <div class="aviso aviso-ojo">
             <strong>Faltan documentos obligatorios:</strong>
-            {{ implode(', ', array_map(fn ($t) => \App\Support\Documentos::etiqueta($t), $faltantes)) }}.
+            {{ implode(', ', array_map(fn ($t) => Documentos::etiqueta($t), $faltantes)) }}.
             No se debe entregar el crédito con el expediente incompleto.
         </div>
     @endif
 
     {{-- Créditos ------------------------------------------------------------ --}}
-    <h2>Créditos</h2>
+    <section class="tarjeta" style="margin-bottom:1.5rem;">
+        <header><h2>Créditos</h2></header>
 
-    @if ($clienta->creditos->isEmpty())
-        <div class="tarjeta apagado">
-            Todavía no tiene créditos.
-            @can('creditos.crear')
-                <a href="{{ route('creditos.nuevo', ['clienta' => $clienta->id]) }}">Dar el primero</a>.
-            @endcan
-        </div>
-    @else
-        <div class="tabla-envoltura tarjeta" style="padding:0;">
-            <table class="tabla">
-                <thead>
-                <tr>
-                    <th class="num">Folio</th>
-                    <th>Entrega</th>
-                    <th>Vence</th>
-                    <th class="num">Total</th>
-                    <th class="num">Pagado</th>
-                    <th class="num">Saldo</th>
-                    <th>Estado</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach ($clienta->creditos as $c)
-                    @php $pagado = (int) $c->abonos->sum('monto_pagado'); @endphp
+        @if ($clienta->creditos->isEmpty())
+            <div class="vacio">
+                <p>Todavía no tiene créditos.</p>
+                @can('creditos.crear')
+                    <a href="{{ route('creditos.nuevo', ['clienta' => $clienta->id]) }}" class="btn-secundario">
+                        Registrar el primero
+                    </a>
+                @endcan
+            </div>
+        @else
+            <div class="tabla-envoltura">
+                <table class="tabla">
+                    <thead>
                     <tr>
-                        <td class="num"><a href="{{ route('creditos.ficha', $c) }}">{{ $c->folioFormateado() }}</a></td>
-                        <td>{{ $c->fecha_entrega->format('d/m/Y') }}</td>
-                        <td>{{ $c->fecha_vencimiento->format('d/m/Y') }}</td>
-                        <td class="num">{{ \App\Support\Dinero::pesos($c->monto_total) }}</td>
-                        <td class="num">{{ \App\Support\Dinero::pesos($pagado) }}</td>
-                        <td class="num">{{ \App\Support\Dinero::pesos(max(0, $c->monto_total - $pagado)) }}</td>
-                        <td><span class="etiqueta e-{{ $c->estado }}">{{ $c->estado }}</span></td>
+                        <th class="num">Folio</th>
+                        <th>Entrega</th>
+                        <th>Vence</th>
+                        <th class="num">Total</th>
+                        <th class="num">Pagado</th>
+                        <th class="num">Saldo</th>
+                        <th>Estado</th>
                     </tr>
-                @endforeach
-                </tbody>
-            </table>
-        </div>
-    @endif
+                    </thead>
+                    <tbody>
+                    @foreach ($clienta->creditos as $c)
+                        @php $pagado = (int) $c->abonos->sum('monto_pagado'); @endphp
+                        <tr>
+                            <td class="num">
+                                <a href="{{ route('creditos.ficha', $c) }}"
+                                   style="font-weight:500; color:var(--patrimonio); text-decoration:none;">
+                                    {{ $c->folioFormateado() }}
+                                </a>
+                            </td>
+                            <td style="white-space:nowrap;">{{ $c->fecha_entrega->format('d/m/Y') }}</td>
+                            <td style="white-space:nowrap;">{{ $c->fecha_vencimiento->format('d/m/Y') }}</td>
+                            <td class="num">{{ Dinero::pesos($c->monto_total) }}</td>
+                            <td class="num">{{ Dinero::pesos($pagado) }}</td>
+                            <td class="num">{{ Dinero::pesos(max(0, $c->monto_total - $pagado)) }}</td>
+                            <td><span class="insignia e-{{ $c->estado }}">{{ $c->estado }}</span></td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+    </section>
 
     {{-- Expediente ----------------------------------------------------------- --}}
-    <h2>Expediente</h2>
+    <section class="tarjeta" style="margin-bottom:1.5rem;">
+        <header>
+            <h2>Expediente</h2>
+            <span class="apagado" style="font-size:.75rem;">
+                {{ $clienta->documentos->count() }} documento(s)
+            </span>
+        </header>
 
-    @if ($clienta->documentos->isEmpty())
-        <div class="tarjeta apagado">Sin documentos todavía.</div>
-    @else
-        <div class="documentos">
-            @foreach ($clienta->documentos as $d)
-                <div class="documento">
-                    <a href="{{ route('documentos.ver', $d) }}" target="_blank">
-                        <img src="{{ route('documentos.ver', $d) }}" alt="{{ $d->etiquetaTipo() }}" loading="lazy">
-                    </a>
-                    <div class="pie-doc">
-                        <strong>{{ $d->etiquetaTipo() }}</strong>
-                        <div class="apagado" style="font-size:11px;">
-                            {{ $d->pesoLegible() }} · {{ $d->created_at?->format('d/m/y') }}
+        @if ($clienta->documentos->isEmpty())
+            <div class="vacio"><p>Sin documentos todavía.</p></div>
+        @else
+            <div class="relleno documentos">
+                @foreach ($clienta->documentos as $d)
+                    <div class="documento">
+                        <a href="{{ route('documentos.ver', $d) }}" target="_blank">
+                            <img src="{{ route('documentos.ver', $d) }}" alt="{{ $d->etiquetaTipo() }}" loading="lazy">
+                        </a>
+                        <div class="pie-doc">
+                            <strong style="color:var(--patrimonio);">{{ $d->etiquetaTipo() }}</strong>
+                            <div class="apagado" style="font-size:.6875rem;">
+                                {{ $d->pesoLegible() }} · {{ $d->created_at?->format('d/m/y') }}
+                            </div>
+                            @can('documentos.subir')
+                                <form method="POST" action="{{ route('documentos.borrar', $d) }}"
+                                      onsubmit="return confirm('¿Eliminar este documento del expediente?')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn-peligro btn-chico" style="margin-top:.375rem;">
+                                        Eliminar
+                                    </button>
+                                </form>
+                            @endcan
                         </div>
-                        @can('documentos.subir')
-                            <form method="POST" action="{{ route('documentos.borrar', $d) }}"
-                                  onsubmit="return confirm('¿Eliminar este documento del expediente?')">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn-plano"
-                                        style="color:var(--alerta); border-color:#edc9c9; margin-top:5px; font-size:11px;">
-                                    Eliminar
-                                </button>
-                            </form>
-                        @endcan
                     </div>
-                </div>
-            @endforeach
-        </div>
-    @endif
+                @endforeach
+            </div>
+        @endif
+    </section>
 
     {{-- Escáner -------------------------------------------------------------- --}}
     @can('documentos.subir')
-        <h2>Escanear documento</h2>
+        <section class="tarjeta no-imprimir" style="margin-bottom:1.5rem;">
+            <header><h2>Escanear documento</h2></header>
 
-        <form method="POST" action="{{ route('documentos.subir', $clienta) }}"
-              enctype="multipart/form-data" class="tarjeta no-imprimir" id="forma-escaner">
-            @csrf
+            <form method="POST" action="{{ route('documentos.subir', $clienta) }}"
+                  enctype="multipart/form-data" class="relleno" id="forma-escaner">
+                @csrf
 
-            <div class="rejilla rejilla-2">
-                <div class="campo">
-                    <label for="tipo">Tipo de documento</label>
-                    <select id="tipo" name="tipo" required>
-                        @foreach ($tiposDocumento as $t)
-                            <option value="{{ $t['valor'] }}">{{ $t['texto'] }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                <div class="rejilla rejilla-2">
+                    <div class="grupo-campo">
+                        <label class="etiqueta-campo" for="tipo">Tipo de documento</label>
+                        <select id="tipo" name="tipo" required>
+                            @foreach ($tiposDocumento as $t)
+                                <option value="{{ $t['valor'] }}">{{ $t['texto'] }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                <div class="campo">
-                    <label for="descripcion">Descripción (opcional)</label>
-                    <input type="text" id="descripcion" name="descripcion">
-                </div>
-            </div>
-
-            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
-                <button type="button" class="btn btn-secundario" id="btn-camara">Abrir cámara</button>
-                <label class="btn btn-secundario" style="margin:0; cursor:pointer;">
-                    Subir archivo
-                    <input type="file" name="archivo" accept="image/*,application/pdf" style="display:none;"
-                           onchange="document.getElementById('forma-escaner').submit()">
-                </label>
-            </div>
-
-            {{-- La cámara solo abre en https:// o en localhost: es una regla del
-                 navegador, no del sistema. --}}
-            <div id="zona-camara" style="display:none;">
-                <video id="camara-vista" autoplay playsinline muted></video>
-                <div class="guia">
-                    <p class="pista" style="margin:0 0 8px;">
-                        Encuadra el documento dentro de la pantalla y toma la foto.
-                    </p>
-                    <label style="display:flex; align-items:center; gap:8px; font-size:14px;">
-                        <input type="checkbox" id="realce" style="width:auto;" checked>
-                        Realzar: blanco y negro con más contraste (se lee mejor)
-                    </label>
-                    <div style="display:flex; gap:10px; margin-top:10px;">
-                        <button type="button" class="btn" id="btn-tomar">Tomar foto</button>
-                        <button type="button" class="btn btn-secundario" id="btn-cerrar">Cerrar cámara</button>
+                    <div class="grupo-campo">
+                        <label class="etiqueta-campo" for="descripcion">Descripción (opcional)</label>
+                        <input type="text" id="descripcion" name="descripcion">
                     </div>
                 </div>
-            </div>
 
-            <canvas id="lienzo" style="display:none;"></canvas>
-            <input type="hidden" name="imagen" id="imagen">
-        </form>
+                <div style="display:flex; gap:.75rem; flex-wrap:wrap; margin-bottom:.75rem;">
+                    <button type="button" class="btn" id="btn-camara">Abrir cámara</button>
+                    <label class="btn-secundario" style="margin:0; cursor:pointer;">
+                        Subir archivo
+                        <input type="file" name="archivo" accept="image/*,application/pdf" style="display:none;"
+                               onchange="document.getElementById('forma-escaner').submit()">
+                    </label>
+                </div>
+
+                {{-- La cámara solo abre en https:// o en localhost: es una regla
+                     del navegador, no del sistema. --}}
+                <div id="zona-camara" style="display:none;">
+                    <video id="camara-vista" autoplay playsinline muted></video>
+                    <div class="guia">
+                        <p class="ayuda" style="margin:0 0 .5rem;">
+                            Encuadra el documento dentro de la pantalla y toma la foto.
+                        </p>
+                        <label class="casilla">
+                            <input type="checkbox" id="realce" checked>
+                            Realzar: blanco y negro con más contraste (se lee mejor)
+                        </label>
+                        <div style="display:flex; gap:.75rem; margin-top:.75rem;">
+                            <button type="button" class="btn" id="btn-tomar">Tomar foto</button>
+                            <button type="button" class="btn-secundario" id="btn-cerrar">Cerrar cámara</button>
+                        </div>
+                    </div>
+                </div>
+
+                <canvas id="lienzo" style="display:none;"></canvas>
+                <input type="hidden" name="imagen" id="imagen">
+            </form>
+        </section>
     @endcan
 
     {{-- Datos ---------------------------------------------------------------- --}}
     @can('clientas.editar')
-        <h2>Datos de la clienta</h2>
-        <form method="POST" action="{{ route('clientas.actualizar', $clienta) }}" class="tarjeta">
-            @csrf
-            @include('clientas._formulario')
-            <button type="submit" class="btn" style="margin-top:16px;">Guardar cambios</button>
-        </form>
+        <section class="tarjeta">
+            <header><h2>Datos de la clienta</h2></header>
+            <form method="POST" action="{{ route('clientas.actualizar', $clienta) }}" class="relleno">
+                @csrf
+                @include('clientas._formulario')
+                <button type="submit" class="btn" style="margin-top:1rem;">Guardar cambios</button>
+            </form>
+        </section>
     @endcan
 @endsection
 
@@ -168,11 +207,11 @@
     const btnCamara = document.getElementById('btn-camara');
     if (!btnCamara) return;
 
-    const zona    = document.getElementById('zona-camara');
-    const video   = document.getElementById('camara-vista');
-    const lienzo  = document.getElementById('lienzo');
-    const campo   = document.getElementById('imagen');
-    const forma   = document.getElementById('forma-escaner');
+    const zona   = document.getElementById('zona-camara');
+    const video  = document.getElementById('camara-vista');
+    const lienzo = document.getElementById('lienzo');
+    const campo  = document.getElementById('imagen');
+    const forma  = document.getElementById('forma-escaner');
     let flujo = null;
 
     btnCamara.addEventListener('click', async () => {
@@ -211,7 +250,7 @@
         // Se limita el lado mayor a 1600 px: suficiente para leer una INE y
         // evita subidas enormes desde la tablet.
         const maximo = 1600;
-        let { videoWidth: an, videoHeight: al } = video;
+        const { videoWidth: an, videoHeight: al } = video;
         const escala = Math.min(1, maximo / Math.max(an, al));
         lienzo.width  = Math.round(an * escala);
         lienzo.height = Math.round(al * escala);
