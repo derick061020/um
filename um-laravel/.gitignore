@@ -34,3 +34,5 @@ Thumbs.db
 /database/*.sqlite-journal
 # Script de diagnóstico temporal
 /prueba_pdf.php
+# Respaldos que genera scripts/desplegar.sh en el servidor
+/respaldos

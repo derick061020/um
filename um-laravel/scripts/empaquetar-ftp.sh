@@ -67,14 +67,8 @@ HT
 echo "→ Copiando la carpeta pública…"
 cp -r "$RAIZ/public/." "$DESTINO/public_html/"
 
-# index.php busca la aplicación en ../um-crm en vez de ..
-python3 - "$DESTINO/public_html/index.php" <<'PY'
-import re, sys
-ruta = sys.argv[1]
-s = open(ruta).read()
-s = s.replace("__DIR__.'/../", "__DIR__.'/../um-crm/")
-open(ruta, 'w').write(s)
-PY
+# index.php detecta solo si la aplicación está arriba o en ../um-crm,
+# así que no hay nada que parchear aquí.
 
 # --- .env de producción ------------------------------------------------------
 echo "→ Generando el .env de producción…"

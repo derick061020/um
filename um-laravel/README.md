@@ -125,7 +125,21 @@ INE reverso y comprobante de domicilio).
 
 ## 6. Despliegue
 
-**Hosting compartido por FTP: [`DESPLIEGUE-FTP.md`](DESPLIEGUE-FTP.md).**
+Dos caminos, según lo que dé tu hosting:
+
+**Con SSH (recomendado): [`DESPLIEGUE-SSH.md`](DESPLIEGUE-SSH.md).** Se clona el
+repositorio en el servidor y cada actualización son dos comandos:
+
+```bash
+cd ~/um && git pull
+cd um-laravel && bash scripts/desplegar.sh ~/domains/tudominio.com/public_html
+```
+
+El script detecta PHP 8.3, instala dependencias, crea el `.env` y la base,
+migra, siembra las cuatro cuentas, ajusta permisos y publica. Es idempotente y
+respalda la base antes de migrar.
+
+**Solo con FTP: [`DESPLIEGUE-FTP.md`](DESPLIEGUE-FTP.md).**
 
 ```bash
 bash scripts/empaquetar-ftp.sh
@@ -134,6 +148,9 @@ bash scripts/empaquetar-ftp.sh
 Deja `paquete-ftp/` con `public_html/` (lo público) y `um-crm/` (la aplicación,
 la base y los documentos). La base va **ya migrada y con las cuatro cuentas**,
 así que no hay que ejecutar nada en el servidor.
+
+En los dos casos `public/index.php` encuentra la aplicación solo, así que no se
+edita nunca.
 
 ---
 
