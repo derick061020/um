@@ -1,14 +1,4 @@
 {
-  "/(sistema)/bitacora/page": "app/(sistema)/bitacora/page.js",
-  "/(sistema)/clientas/[id]/page": "app/(sistema)/clientas/[id]/page.js",
-  "/(sistema)/clientas/page": "app/(sistema)/clientas/page.js",
-  "/(sistema)/cobranza/page": "app/(sistema)/cobranza/page.js",
-  "/(sistema)/corte/page": "app/(sistema)/corte/page.js",
-  "/(sistema)/creditos/nuevo/page": "app/(sistema)/creditos/nuevo/page.js",
-  "/(sistema)/creditos/page": "app/(sistema)/creditos/page.js",
-  "/(sistema)/grupos/page": "app/(sistema)/grupos/page.js",
   "/(sistema)/panel/page": "app/(sistema)/panel/page.js",
-  "/(sistema)/usuarios/page": "app/(sistema)/usuarios/page.js",
-  "/entrar/page": "app/entrar/page.js",
-  "/page": "app/page.js"
+  "/entrar/page": "app/entrar/page.js"
 }

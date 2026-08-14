@@ -751,6 +751,10 @@
     pointer-events: none;
   }
 
+  .visible {
+    visibility: visible;
+  }
+
   .sr-only {
     clip-path: inset(50%);
     white-space: nowrap;
@@ -769,6 +773,10 @@
 
   .relative {
     position: relative;
+  }
+
+  .static {
+    position: static;
   }
 
   .sticky {
@@ -899,6 +907,10 @@
     display: none;
   }
 
+  .table {
+    display: table;
+  }
+
   .h-4 {
     height: calc(var(--spacing) * 4);
   }
@@ -1017,6 +1029,10 @@
 
   .shrink-0 {
     flex-shrink: 0;
+  }
+
+  .border-collapse {
+    border-collapse: collapse;
   }
 
   .cursor-pointer {
