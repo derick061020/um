@@ -47,18 +47,34 @@ fi
 echo "→ PHP: $PHP ($("$PHP" -r 'echo PHP_VERSION;'))"
 
 # --- Composer ----------------------------------------------------------------
-if command -v composer >/dev/null 2>&1; then
-    COMPOSER="composer"
-elif [ -f "$APP/composer.phar" ]; then
+# Ojo: NUNCA se invoca `composer` a secas. El composer del sistema arranca con
+# el PHP por omisión de la consola —en Hostinger, 8.2— y falla el chequeo de
+# plataforma aunque el sitio esté en 8.3. Siempre se ejecuta con el $PHP que
+# encontramos arriba.
+COMPOSER=""
+
+if [ -f "$APP/composer.phar" ]; then
     COMPOSER="$PHP $APP/composer.phar"
-else
-    echo "→ Composer no está instalado; se descarga en la carpeta del proyecto…"
-    curl -sS https://getcomposer.org/installer | "$PHP" -- --install-dir="$APP" --quiet
+elif command -v composer >/dev/null 2>&1; then
+    RUTA_COMPOSER="$(command -v composer)"
+    if "$PHP" "$RUTA_COMPOSER" --version >/dev/null 2>&1; then
+        COMPOSER="$PHP $RUTA_COMPOSER"
+    else
+        echo "→ El composer del sistema no se puede ejecutar con este PHP."
+    fi
+fi
+
+if [ -z "$COMPOSER" ]; then
+    echo "→ Descargando Composer en la carpeta del proyecto…"
+    curl -sS https://getcomposer.org/installer -o "$APP/instalador-composer.php"
+    "$PHP" "$APP/instalador-composer.php" --install-dir="$APP" --quiet
+    rm -f "$APP/instalador-composer.php"
     COMPOSER="$PHP $APP/composer.phar"
 fi
 
+echo "→ Composer: $COMPOSER"
 echo "→ Instalando dependencias de producción…"
-$COMPOSER install --no-dev --optimize-autoloader --no-interaction --quiet
+$COMPOSER install --no-dev --optimize-autoloader --no-interaction
 
 # --- .env --------------------------------------------------------------------
 if [ ! -f "$APP/.env" ]; then

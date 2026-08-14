@@ -171,11 +171,23 @@ puedes dejar una copia diaria:
 servidor.
 
 **El script dice que no encuentra PHP 8.3.** Cámbialo en hPanel → *Configuración
-PHP*. Si el sitio ya está en 8.3 pero la consola no, prueba a ejecutarlo con la
-ruta completa:
+PHP*. Si el sitio ya está en 8.3 pero la consola no, comprueba la ruta directa:
 
 ```bash
 /opt/alt/php83/usr/bin/php -v
+```
+
+**"Your Composer dependencies require a PHP version >= 8.3.0. You are running
+8.2.x".** En hosting compartido el `php` de la consola no es el del sitio, y
+`composer` a secas arranca con ese PHP viejo. El script ya lo evita: **nunca**
+llama a `composer` directo, siempre lo ejecuta como
+`<ruta-del-php-8.3> <ruta-de-composer>`. Si te sale este error, tienes una
+versión vieja del script: haz `git pull` y vuelve a desplegar.
+
+Si alguna vez necesitas hacerlo a mano, el patrón es:
+
+```bash
+/opt/alt/php83/usr/bin/php "$(command -v composer)" install --no-dev --optimize-autoloader
 ```
 
 **Error 500 o pantalla en blanco.** Mira el detalle:
