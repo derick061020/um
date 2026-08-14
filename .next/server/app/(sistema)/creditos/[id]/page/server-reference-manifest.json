@@ -1,0 +1,60 @@
+{
+  "node": {
+    "0037b7a661b33f354b13003a86cb93fc48794d8baa": {
+      "workers": {
+        "app/(sistema)/creditos/[id]/page": {
+          "moduleId": 7056,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "salir",
+      "filename": "src/app/(sistema)/acciones.ts"
+    },
+    "60a0d8e7361edcdb645689d50d3fc07fabfc4af636": {
+      "workers": {
+        "app/(sistema)/creditos/[id]/page": {
+          "moduleId": 7056,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "marcarAbono",
+      "filename": "src/app/(sistema)/cobranza/acciones.ts"
+    },
+    "60d276cd516532a7b8f98fd4108f30eface13c6f24": {
+      "workers": {
+        "app/(sistema)/creditos/[id]/page": {
+          "moduleId": 7056,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "abonoParcial",
+      "filename": "src/app/(sistema)/cobranza/acciones.ts"
+    },
+    "60aa0fa504b666bd2f02148d095aafb4afdc206ea1": {
+      "workers": {
+        "app/(sistema)/creditos/[id]/page": {
+          "moduleId": 7056,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "anularAbono",
+      "filename": "src/app/(sistema)/cobranza/acciones.ts"
+    },
+    "60d93f114ecf75c25d0dc9085cff8736befb67e862": {
+      "workers": {
+        "app/(sistema)/creditos/[id]/page": {
+          "moduleId": 7056,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "cancelarCredito",
+      "filename": "src/app/(sistema)/creditos/acciones.ts"
+    }
+  },
+  "edge": {}
+}

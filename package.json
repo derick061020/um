@@ -1,0 +1,49 @@
+{
+  "name": "um-crm",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CRM de crédito grupal — Mujeres Unidas",
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "start": "next start -p ${PORT:-3000}",
+    "typecheck": "tsc --noEmit",
+    "db:up": "docker compose up -d db",
+    "db:down": "docker compose down",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:studio": "prisma studio",
+    "seed": "tsx prisma/seed.ts",
+    "pruebas": "tsx scripts/pruebas.mts",
+    "respaldo": "bash scripts/respaldo.sh"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@pdf-lib/fontkit": "^1.1.1",
+    "@prisma/client": "^6.2.1",
+    "bcryptjs": "^2.4.3",
+    "date-fns": "^4.1.0",
+    "jose": "^5.9.6",
+    "next": "^16.3.1",
+    "pdf-lib": "^1.17.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "sharp": "^0.33.5",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^22.10.7",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "postcss": "^8.5.1",
+    "prisma": "^6.2.1",
+    "tailwindcss": "^4.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}

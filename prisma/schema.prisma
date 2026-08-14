@@ -1,0 +1,265 @@
+// CRM Mujeres Unidas — esquema de datos
+// Todos los importes se guardan en CENTAVOS (enteros) para evitar errores de redondeo.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Rol {
+  PRINCIPAL // dueña / dirección: crea usuarios, ve todo
+  SUPERVISOR // crea y administra grupos (VIRI 1, CHIHUAHUA 1...)
+  CAPTURISTA // alta de clientas y avales, historial, marca abonos del sábado
+  ENCARGADA // solo consulta el total a cobrar del día
+}
+
+enum EstadoCredito {
+  ACTIVO
+  LIQUIDADO
+  VENCIDO
+  CANCELADO
+}
+
+enum EstadoAbono {
+  PENDIENTE
+  PARCIAL
+  PAGADO
+}
+
+enum TipoDocumento {
+  INE_FRENTE
+  INE_REVERSO
+  COMPROBANTE_DOMICILIO
+  INE_AVAL_FRENTE
+  INE_AVAL_REVERSO
+  COMPROBANTE_AVAL
+  PAGARE
+  CONTRATO
+  OTRO
+}
+
+model Usuario {
+  id           String   @id @default(cuid())
+  nombre       String
+  usuario      String   @unique // login corto, sin correo (la operación es local)
+  passwordHash String
+  rol          Rol
+  activo       Boolean  @default(true)
+  telefono     String?
+  creadoEn     DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+
+  creadoPorId String?
+  creadoPor   Usuario?  @relation("UsuarioCreador", fields: [creadoPorId], references: [id], onDelete: SetNull)
+  creados     Usuario[] @relation("UsuarioCreador")
+
+  gruposSupervisados Grupo[] @relation("SupervisorGrupo")
+  gruposEncargados   Grupo[] @relation("EncargadaGrupo")
+  gruposCreados      Grupo[] @relation("GrupoCreador")
+
+  clientasRegistradas Cliente[]    @relation("ClienteCaptura")
+  creditosRegistrados Credito[]    @relation("CreditoCaptura")
+  pagosRegistrados    Pago[]       @relation("PagoCaptura")
+  documentosSubidos   Documento[]  @relation("DocumentoCaptura")
+  movimientos         Auditoria[]
+  sesiones            Sesion[]
+
+  @@index([rol, activo])
+}
+
+model Sesion {
+  id         String   @id @default(cuid())
+  usuarioId  String
+  usuario    Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  expiraEn   DateTime
+  creadaEn   DateTime @default(now())
+  agente     String?
+  ip         String?
+
+  @@index([usuarioId])
+  @@index([expiraEn])
+}
+
+model Grupo {
+  id       String  @id @default(cuid())
+  nombre   String  @unique // "VIRI 1", "CHIHUAHUA 1"
+  plaza    String? // ciudad / zona
+  activo   Boolean @default(true)
+  notas    String?
+
+  supervisorId String?
+  supervisor   Usuario? @relation("SupervisorGrupo", fields: [supervisorId], references: [id], onDelete: SetNull)
+
+  encargadaId String?
+  encargada   Usuario? @relation("EncargadaGrupo", fields: [encargadaId], references: [id], onDelete: SetNull)
+
+  creadoPorId String?
+  creadoPor   Usuario? @relation("GrupoCreador", fields: [creadoPorId], references: [id], onDelete: SetNull)
+
+  creadoEn      DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+
+  clientas Cliente[]
+  creditos Credito[]
+
+  @@index([activo])
+}
+
+model Cliente {
+  id     String @id @default(cuid())
+  folio  Int    @unique @default(autoincrement())
+  nombre String
+
+  telefono  String?
+  domicilio String?
+  colonia   String?
+  ciudad    String?
+  curp      String?
+
+  // Aval — dato obligatorio en la operación de Mujeres Unidas
+  avalNombre      String?
+  avalTelefono    String?
+  avalParentesco  String?
+  avalDomicilio   String?
+  avalColonia     String?
+  avalCiudad      String?
+
+  grupoId String?
+  grupo   Grupo?  @relation(fields: [grupoId], references: [id], onDelete: SetNull)
+
+  activo Boolean @default(true)
+  notas  String?
+
+  capturadoPorId String?
+  capturadoPor   Usuario? @relation("ClienteCaptura", fields: [capturadoPorId], references: [id], onDelete: SetNull)
+
+  creadoEn      DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+
+  creditos   Credito[]
+  documentos Documento[]
+
+  @@index([grupoId, activo])
+  @@index([nombre])
+}
+
+model Credito {
+  id    String @id @default(cuid())
+  folio Int    @unique @default(autoincrement())
+
+  clienteId String
+  cliente   Cliente @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+
+  grupoId String?
+  grupo   Grupo?  @relation(fields: [grupoId], references: [id], onDelete: SetNull)
+
+  // Importes en centavos
+  montoPrestado Int
+  montoTotal    Int // lo que la clienta termina pagando (capital + interés)
+  abonoSemanal  Int
+  numSemanas    Int @default(12)
+
+  // Fechas: se captura el LUNES de entrega y el sistema genera los sábados
+  fechaEntrega      DateTime @db.Date // lunes
+  fechaPrimerAbono  DateTime @db.Date // primer sábado
+  fechaVencimiento  DateTime @db.Date // sábado de la semana 12
+
+  estado    EstadoCredito @default(ACTIVO)
+  liquidadoEn DateTime?
+  notas     String?
+
+  capturadoPorId String?
+  capturadoPor   Usuario? @relation("CreditoCaptura", fields: [capturadoPorId], references: [id], onDelete: SetNull)
+
+  creadoEn      DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+
+  abonos Abono[]
+  pagos  Pago[]
+
+  @@index([grupoId, estado])
+  @@index([clienteId])
+  @@index([estado, fechaVencimiento])
+}
+
+model Abono {
+  id        String  @id @default(cuid())
+  creditoId String
+  credito   Credito @relation(fields: [creditoId], references: [id], onDelete: Cascade)
+
+  semana          Int // 1..12
+  fechaProgramada DateTime @db.Date // siempre sábado
+  montoEsperado   Int
+  montoPagado     Int         @default(0)
+  estado          EstadoAbono @default(PENDIENTE)
+  pagadoEn        DateTime?
+
+  pagos Pago[]
+
+  @@unique([creditoId, semana])
+  @@index([fechaProgramada, estado])
+}
+
+model Pago {
+  id        String  @id @default(cuid())
+  creditoId String
+  credito   Credito @relation(fields: [creditoId], references: [id], onDelete: Cascade)
+
+  abonoId String?
+  abono   Abono?  @relation(fields: [abonoId], references: [id], onDelete: SetNull)
+
+  monto  Int
+  fecha  DateTime @db.Date
+  nota   String?
+  anulado Boolean @default(false)
+
+  registradoPorId String?
+  registradoPor   Usuario? @relation("PagoCaptura", fields: [registradoPorId], references: [id], onDelete: SetNull)
+
+  creadoEn DateTime @default(now())
+
+  @@index([fecha, anulado])
+  @@index([creditoId])
+}
+
+model Documento {
+  id        String  @id @default(cuid())
+  clienteId String
+  cliente   Cliente @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+
+  tipo        TipoDocumento @default(OTRO)
+  descripcion String?
+  archivo     String // ruta relativa dentro de STORAGE_DIR
+  mime        String
+  bytes       Int
+  ancho       Int?
+  alto        Int?
+
+  subidoPorId String?
+  subidoPor   Usuario? @relation("DocumentoCaptura", fields: [subidoPorId], references: [id], onDelete: SetNull)
+
+  creadoEn DateTime @default(now())
+
+  @@index([clienteId, tipo])
+}
+
+model Auditoria {
+  id        String   @id @default(cuid())
+  usuarioId String?
+  usuario   Usuario? @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+
+  accion   String // "credito.crear", "abono.marcar", ...
+  entidad  String
+  entidadId String?
+  detalle  Json?
+  ip       String?
+
+  creadoEn DateTime @default(now())
+
+  @@index([creadoEn])
+  @@index([entidad, entidadId])
+}

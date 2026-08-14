@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: um_crm_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-um}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-um_local_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-um_crm}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - um_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-um} -d ${POSTGRES_DB:-um_crm}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Solo se usa en el servidor (perfil "prod"): docker compose --profile prod up -d
+  app:
+    profiles: ["prod"]
+    build: .
+    container_name: um_crm_app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-um}:${POSTGRES_PASSWORD:-um_local_dev}@db:5432/${POSTGRES_DB:-um_crm}?schema=public
+      AUTH_SECRET: ${AUTH_SECRET}
+      STORAGE_DIR: /data/archivos
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    volumes:
+      - um_archivos:/data/archivos
+
+volumes:
+  um_pgdata:
+  um_archivos:

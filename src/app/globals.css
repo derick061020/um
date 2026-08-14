@@ -1,0 +1,139 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Identidad visual Mujeres Unidas — paleta y tipografía del manual de marca.
+   --------------------------------------------------------------------------- */
+@theme {
+  --color-patrimonio: #16402e; /* Verde Patrimonio — principal, confianza */
+  --color-crecimiento: #2f6b50; /* Verde Crecimiento — secundario, cercanía */
+  --color-salvia: #afc7b9; /* Salvia Unión — fondos suaves */
+  --color-niebla: #e8ecea; /* Niebla Verde — tablas y divisiones */
+  --color-marfil: #f6f1e7; /* Marfil Humano — editorial y cálido */
+  --color-oro: #c8a96b; /* Oro Trigo — acento controlado */
+  --color-tinta: #252a27; /* Carbón Tinta — texto funcional */
+
+  --color-exito: #2f6b50;
+  --color-alerta: #b4671e;
+  --color-riesgo: #9c2f2f;
+
+  --font-display: var(--fuente-serif-display), Georgia, serif;
+  --font-serif: var(--fuente-serif-text), Georgia, serif;
+  --font-sans: var(--fuente-sans), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-marca: 0.75rem;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-marfil);
+  color: var(--color-tinta);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* La marca de agua del manual: perfil y mechones en tinte claro, baja presencia. */
+.marca-agua {
+  position: relative;
+  isolation: isolate;
+}
+.marca-agua::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: url("/brand/um-monocromatico.png");
+  background-repeat: no-repeat;
+  background-position: right 1.5rem bottom 1.5rem;
+  background-size: 14rem;
+  opacity: 0.045;
+}
+
+/* En pantallas chicas la marca de agua quedaría detrás de los datos. */
+@media (max-width: 900px) {
+  .marca-agua::after {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Utilidades de formulario — controles grandes, pensados para tablet.
+   --------------------------------------------------------------------------- */
+@layer components {
+  .campo {
+    @apply block w-full rounded-lg border border-niebla bg-white px-3.5 py-3 text-base
+           text-tinta shadow-sm outline-none transition
+           placeholder:text-tinta/35
+           focus:border-crecimiento focus:ring-2 focus:ring-crecimiento/25
+           disabled:cursor-not-allowed disabled:bg-niebla/50;
+  }
+
+  .etiqueta {
+    @apply mb-1.5 block text-xs font-semibold uppercase tracking-wider text-patrimonio/70;
+  }
+
+  .ayuda {
+    @apply mt-1 text-xs text-tinta/55;
+  }
+
+  /* Tailwind v4 solo permite @apply con utilidades reales, así que la base
+     del botón se declara una vez para todas las variantes. */
+  .btn,
+  .btn-primario,
+  .btn-secundario,
+  .btn-fantasma,
+  .btn-peligro {
+    @apply inline-flex select-none items-center justify-center gap-2 rounded-lg px-4 py-3
+           text-sm font-semibold transition active:scale-[0.99]
+           disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100;
+  }
+  .btn-primario {
+    @apply bg-patrimonio text-white hover:bg-crecimiento;
+  }
+  .btn-secundario {
+    @apply border border-patrimonio/20 bg-white text-patrimonio hover:bg-niebla;
+  }
+  .btn-fantasma {
+    @apply text-patrimonio hover:bg-patrimonio/5;
+  }
+  .btn-peligro {
+    @apply border border-riesgo/25 bg-white text-riesgo hover:bg-riesgo/5;
+  }
+
+  .tarjeta {
+    @apply rounded-xl border border-niebla bg-white shadow-sm;
+  }
+
+  .insignia {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold;
+  }
+
+  .tabla {
+    @apply w-full border-collapse text-sm;
+  }
+  .tabla thead th {
+    @apply border-b border-niebla px-3 py-2.5 text-left text-xs font-semibold
+           uppercase tracking-wider text-patrimonio/70;
+  }
+  .tabla tbody td {
+    @apply border-b border-niebla/70 px-3 py-3 align-middle;
+  }
+  .tabla tbody tr:last-child td {
+    @apply border-b-0;
+  }
+}
+
+/* Ocultar la barra de scroll horizontal en tablas anchas sin perder el gesto. */
+.scroll-suave {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-salvia) transparent;
+}
+
+@media print {
+  .no-imprimir {
+    display: none !important;
+  }
+}

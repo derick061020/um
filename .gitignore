@@ -1,0 +1,27 @@
+node_modules/
+out/
+dist/
+
+# El build de producción (.next) SÍ se versiona para entregar el sistema ya
+# compilado. Solo se excluyen cachés, trazas y dependencias regenerables.
+.next/cache/
+.next/trace
+.next/trace-build
+.next/diagnostics/
+.next/standalone/node_modules/
+
+# Secretos y datos locales
+.env
+.env.local
+.env.*.local
+
+storage/
+respaldos/
+
+*.log
+npm-debug.log*
+.DS_Store
+.idea/
+.vscode/
+
+tsconfig.tsbuildinfo

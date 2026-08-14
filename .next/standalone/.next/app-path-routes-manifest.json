@@ -1,0 +1,20 @@
+{
+  "/(sistema)/bitacora/page": "/bitacora",
+  "/(sistema)/clientas/[id]/page": "/clientas/[id]",
+  "/(sistema)/clientas/nueva/page": "/clientas/nueva",
+  "/(sistema)/clientas/page": "/clientas",
+  "/(sistema)/cobranza/page": "/cobranza",
+  "/(sistema)/corte/page": "/corte",
+  "/(sistema)/creditos/[id]/page": "/creditos/[id]",
+  "/(sistema)/creditos/nuevo/page": "/creditos/nuevo",
+  "/(sistema)/creditos/page": "/creditos",
+  "/(sistema)/grupos/page": "/grupos",
+  "/(sistema)/panel/page": "/panel",
+  "/(sistema)/usuarios/page": "/usuarios",
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/api/documentos/[id]/route": "/api/documentos/[id]",
+  "/api/tarjeton/[id]/route": "/api/tarjeton/[id]",
+  "/entrar/page": "/entrar",
+  "/page": "/"
+}

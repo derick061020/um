@@ -1,0 +1,273 @@
+{
+  "node": {
+    "0037b7a661b33f354b13003a86cb93fc48794d8baa": {
+      "workers": {
+        "app/(sistema)/bitacora/page": {
+          "moduleId": 14413,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(sistema)/clientas/[id]/page": {
+          "moduleId": 70316,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(sistema)/clientas/nueva/page": {
+          "moduleId": 82446,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(sistema)/clientas/page": {
+          "moduleId": 77454,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(sistema)/cobranza/page": {
+          "moduleId": 42151,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(sistema)/corte/page": {
+          "moduleId": 5464,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(sistema)/creditos/[id]/page": {
+          "moduleId": 7056,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(sistema)/creditos/nuevo/page": {
+          "moduleId": 45490,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(sistema)/creditos/page": {
+          "moduleId": 75732,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(sistema)/grupos/page": {
+          "moduleId": 46760,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(sistema)/panel/page": {
+          "moduleId": 94128,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(sistema)/usuarios/page": {
+          "moduleId": 46000,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/app/(sistema)/acciones.ts",
+      "exportedName": "salir"
+    },
+    "606e7a55234e234d55c3c444a2cab98b625aeb854e": {
+      "workers": {
+        "app/(sistema)/clientas/[id]/page": {
+          "moduleId": 70316,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/app/(sistema)/clientas/[id]/documentos.ts",
+      "exportedName": "subirDocumento"
+    },
+    "6004d98b4d1a02892f787ac11656116f471a3e456c": {
+      "workers": {
+        "app/(sistema)/clientas/[id]/page": {
+          "moduleId": 70316,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(sistema)/clientas/nueva/page": {
+          "moduleId": 82446,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/app/(sistema)/clientas/acciones.ts",
+      "exportedName": "crearClienta"
+    },
+    "600ee2d954f762e190d69a9d4a02728fbaf2e41394": {
+      "workers": {
+        "app/(sistema)/clientas/[id]/page": {
+          "moduleId": 70316,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(sistema)/clientas/nueva/page": {
+          "moduleId": 82446,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/app/(sistema)/clientas/acciones.ts",
+      "exportedName": "actualizarClienta"
+    },
+    "604e956b44b771e6f948266c7bf2213bdef8e14347": {
+      "workers": {
+        "app/(sistema)/clientas/[id]/page": {
+          "moduleId": 70316,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/app/(sistema)/clientas/[id]/documentos.ts",
+      "exportedName": "borrarDocumento"
+    },
+    "60a0d8e7361edcdb645689d50d3fc07fabfc4af636": {
+      "workers": {
+        "app/(sistema)/cobranza/page": {
+          "moduleId": 42151,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(sistema)/creditos/[id]/page": {
+          "moduleId": 7056,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/app/(sistema)/cobranza/acciones.ts",
+      "exportedName": "marcarAbono"
+    },
+    "60d276cd516532a7b8f98fd4108f30eface13c6f24": {
+      "workers": {
+        "app/(sistema)/cobranza/page": {
+          "moduleId": 42151,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(sistema)/creditos/[id]/page": {
+          "moduleId": 7056,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/app/(sistema)/cobranza/acciones.ts",
+      "exportedName": "abonoParcial"
+    },
+    "60aa0fa504b666bd2f02148d095aafb4afdc206ea1": {
+      "workers": {
+        "app/(sistema)/cobranza/page": {
+          "moduleId": 42151,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(sistema)/creditos/[id]/page": {
+          "moduleId": 7056,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/app/(sistema)/cobranza/acciones.ts",
+      "exportedName": "anularAbono"
+    },
+    "60d93f114ecf75c25d0dc9085cff8736befb67e862": {
+      "workers": {
+        "app/(sistema)/creditos/[id]/page": {
+          "moduleId": 7056,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/app/(sistema)/creditos/acciones.ts",
+      "exportedName": "cancelarCredito"
+    },
+    "60d529ad5d689107d602a4c4bd31020d302a8cfe2d": {
+      "workers": {
+        "app/(sistema)/creditos/nuevo/page": {
+          "moduleId": 45490,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/app/(sistema)/creditos/acciones.ts",
+      "exportedName": "registrarCredito"
+    },
+    "603002bb26a0355e70424ff33bd7eddf726863f408": {
+      "workers": {
+        "app/(sistema)/grupos/page": {
+          "moduleId": 46760,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/app/(sistema)/grupos/acciones.ts",
+      "exportedName": "cambiarEstadoGrupo"
+    },
+    "605acfdd11611e4c4bc0502a472fb9897eeb8b1b36": {
+      "workers": {
+        "app/(sistema)/grupos/page": {
+          "moduleId": 46760,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/app/(sistema)/grupos/acciones.ts",
+      "exportedName": "crearGrupo"
+    },
+    "60c0139da678a3a9cfa0c918a563c617b545c89afc": {
+      "workers": {
+        "app/(sistema)/grupos/page": {
+          "moduleId": 46760,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/app/(sistema)/grupos/acciones.ts",
+      "exportedName": "actualizarGrupo"
+    },
+    "600f98d1b5fbccee05c30a837c4c1379a89d4f8257": {
+      "workers": {
+        "app/(sistema)/usuarios/page": {
+          "moduleId": 46000,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/app/(sistema)/usuarios/acciones.ts",
+      "exportedName": "restablecerPassword"
+    },
+    "60958ddb96b48f8174b809c8836646047396f4bd04": {
+      "workers": {
+        "app/(sistema)/usuarios/page": {
+          "moduleId": 46000,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/app/(sistema)/usuarios/acciones.ts",
+      "exportedName": "cambiarEstadoUsuario"
+    },
+    "60fd836bb08cae518229b80e3c2effd82c732ecc2d": {
+      "workers": {
+        "app/(sistema)/usuarios/page": {
+          "moduleId": 46000,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/app/(sistema)/usuarios/acciones.ts",
+      "exportedName": "crearUsuario"
+    },
+    "60920f6652e965de4e51fa02d6b3c1fcc1c78d0ffe": {
+      "workers": {
+        "app/entrar/page": {
+          "moduleId": 20981,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/app/entrar/acciones.ts",
+      "exportedName": "entrar"
+    }
+  },
+  "edge": {},
+  "encryptionKey": "OTMfzmQSXb+3WGe1tIlhTv1QsapnVLFYfSHn5GrQnss="
+}

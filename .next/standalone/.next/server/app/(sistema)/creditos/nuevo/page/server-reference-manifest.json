@@ -1,0 +1,27 @@
+{
+  "node": {
+    "0037b7a661b33f354b13003a86cb93fc48794d8baa": {
+      "workers": {
+        "app/(sistema)/creditos/nuevo/page": {
+          "moduleId": 45490,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "salir",
+      "filename": "src/app/(sistema)/acciones.ts"
+    },
+    "60d529ad5d689107d602a4c4bd31020d302a8cfe2d": {
+      "workers": {
+        "app/(sistema)/creditos/nuevo/page": {
+          "moduleId": 45490,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "registrarCredito",
+      "filename": "src/app/(sistema)/creditos/acciones.ts"
+    }
+  },
+  "edge": {}
+}

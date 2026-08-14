@@ -1,0 +1,20 @@
+{
+  "/(sistema)/bitacora/page": "app/(sistema)/bitacora/page.js",
+  "/(sistema)/clientas/[id]/page": "app/(sistema)/clientas/[id]/page.js",
+  "/(sistema)/clientas/nueva/page": "app/(sistema)/clientas/nueva/page.js",
+  "/(sistema)/clientas/page": "app/(sistema)/clientas/page.js",
+  "/(sistema)/cobranza/page": "app/(sistema)/cobranza/page.js",
+  "/(sistema)/corte/page": "app/(sistema)/corte/page.js",
+  "/(sistema)/creditos/[id]/page": "app/(sistema)/creditos/[id]/page.js",
+  "/(sistema)/creditos/nuevo/page": "app/(sistema)/creditos/nuevo/page.js",
+  "/(sistema)/creditos/page": "app/(sistema)/creditos/page.js",
+  "/(sistema)/grupos/page": "app/(sistema)/grupos/page.js",
+  "/(sistema)/panel/page": "app/(sistema)/panel/page.js",
+  "/(sistema)/usuarios/page": "app/(sistema)/usuarios/page.js",
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/documentos/[id]/route": "app/api/documentos/[id]/route.js",
+  "/api/tarjeton/[id]/route": "app/api/tarjeton/[id]/route.js",
+  "/entrar/page": "app/entrar/page.js",
+  "/page": "app/page.js"
+}

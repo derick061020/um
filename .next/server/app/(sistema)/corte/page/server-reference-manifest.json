@@ -1,0 +1,16 @@
+{
+  "node": {
+    "0037b7a661b33f354b13003a86cb93fc48794d8baa": {
+      "workers": {
+        "app/(sistema)/corte/page": {
+          "moduleId": 5464,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "salir",
+      "filename": "src/app/(sistema)/acciones.ts"
+    }
+  },
+  "edge": {}
+}

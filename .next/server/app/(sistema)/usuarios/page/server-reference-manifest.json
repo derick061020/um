@@ -1,0 +1,49 @@
+{
+  "node": {
+    "0037b7a661b33f354b13003a86cb93fc48794d8baa": {
+      "workers": {
+        "app/(sistema)/usuarios/page": {
+          "moduleId": 46000,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "salir",
+      "filename": "src/app/(sistema)/acciones.ts"
+    },
+    "600f98d1b5fbccee05c30a837c4c1379a89d4f8257": {
+      "workers": {
+        "app/(sistema)/usuarios/page": {
+          "moduleId": 46000,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "restablecerPassword",
+      "filename": "src/app/(sistema)/usuarios/acciones.ts"
+    },
+    "60958ddb96b48f8174b809c8836646047396f4bd04": {
+      "workers": {
+        "app/(sistema)/usuarios/page": {
+          "moduleId": 46000,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "cambiarEstadoUsuario",
+      "filename": "src/app/(sistema)/usuarios/acciones.ts"
+    },
+    "60fd836bb08cae518229b80e3c2effd82c732ecc2d": {
+      "workers": {
+        "app/(sistema)/usuarios/page": {
+          "moduleId": 46000,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "crearUsuario",
+      "filename": "src/app/(sistema)/usuarios/acciones.ts"
+    }
+  },
+  "edge": {}
+}

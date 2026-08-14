@@ -1,0 +1,14 @@
+{
+  "name": "Mujeres Unidas · Control de crédito",
+  "short_name": "Mujeres Unidas",
+  "description": "Control de crédito grupal, cobranza semanal y expediente digital.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#F6F1E7",
+  "theme_color": "#16402E",
+  "icons": [
+    { "src": "/brand/um-principal.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/brand/um-principal.png", "sizes": "192x192", "type": "image/png", "purpose": "any" }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "pages": {},
+  "app": {
+    "[project]/src/app/(sistema)/creditos/page": [
+      "static/media/DMSans_Regular-s.p.1ak_r0qwk4efr.ttf",
+      "static/media/DMSans_Medium-s.p.2r2fipdt7dpwy.ttf",
+      "static/media/DMSans_Bold-s.p.10xgmchs6okr4.ttf",
+      "static/media/DMSerifDisplay_Regular-s.p.1cwgd45cshhpi.ttf",
+      "static/media/DMSerifText_Regular-s.p.0mhrfhc3bqa9i.ttf"
+    ]
+  },
+  "appUsingSizeAdjust": true,
+  "pagesUsingSizeAdjust": false
+}
