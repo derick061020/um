@@ -40,6 +40,24 @@ npm run seed                  # cuentas de prueba y datos de ejemplo
 npm run dev                   # http://localhost:3000
 ```
 
+Para comprobar que todo está bien antes de subirlo al servidor:
+
+```bash
+npm run pruebas               # 30 pruebas de fechas, importes y ciclo del crédito
+npm run typecheck             # revisa los tipos
+```
+
+Y para probar **el mismo build que corre en producción**, no el de desarrollo:
+
+```bash
+npm run build
+npm start                     # http://localhost:3000
+```
+
+> En `npm start` la cámara del escáner no abre si entras desde otro dispositivo
+> por IP: los navegadores solo la permiten en `localhost` o en `https://`. Es
+> normal, en el servidor con dominio y certificado funciona.
+
 ### Cuentas que crea el `seed`
 
 Contraseña de todas: `Cambiar123` (cámbialas antes de producción).
@@ -153,12 +171,20 @@ reverso y comprobante de domicilio).
 
 ## 7. Despliegue en el servidor
 
+**Guía completa paso a paso: [`DESPLIEGUE-HOSTINGER.md`](DESPLIEGUE-HOSTINGER.md)**
+(dominio, HTTPS, firewall y respaldos). Resumen:
+
 ```bash
 # en el servidor, dentro de /opt/um-crm
-cp .env.example .env          # AUTH_SECRET nuevo y contraseña de Postgres fuerte
+bash scripts/instalar-servidor.sh   # Docker, firewall y Caddy
+cp .env.example .env                # AUTH_SECRET nuevo y contraseña de Postgres fuerte
 docker compose --profile prod up -d --build
 docker compose exec app npx prisma migrate deploy
+docker compose exec app npx tsx prisma/seed.ts
 ```
+
+Hace falta un **VPS** (Node.js + PostgreSQL). El hosting compartido no sirve:
+no corre Node como servicio ni tiene PostgreSQL.
 
 Después se pone Nginx (o Caddy) delante para el dominio y el certificado HTTPS.
 Ejemplo mínimo con Caddy, que saca el certificado solo:

@@ -81,6 +81,15 @@ async function main() {
     },
   });
 
+  // En el servidor solo se crean las cuatro cuentas de rol. Los grupos y las
+  // clientas de ejemplo son para probar en local y no deben ensuciar la base
+  // real. Para forzarlos en producción: SEED_DEMO=1 npm run seed
+  if (process.env.NODE_ENV === "production" && process.env.SEED_DEMO !== "1") {
+    console.log("✓ Cuentas de rol creadas (sin datos de ejemplo).");
+    console.log("  Entra con 'direccion' / 'Cambiar123' y cambia la contraseña.");
+    return;
+  }
+
   const viri = await db.grupo.upsert({
     where: { nombre: "VIRI 1" },
     update: {},

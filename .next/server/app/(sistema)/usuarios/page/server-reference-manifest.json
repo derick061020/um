@@ -1,6 +1,6 @@
 {
   "node": {
-    "0037b7a661b33f354b13003a86cb93fc48794d8baa": {
+    "005c3b00e94c17a3a6b2bd3fe1b8315682769778e3": {
       "workers": {
         "app/(sistema)/usuarios/page": {
           "moduleId": 46000,
@@ -11,7 +11,18 @@
       "exportedName": "salir",
       "filename": "src/app/(sistema)/acciones.ts"
     },
-    "600f98d1b5fbccee05c30a837c4c1379a89d4f8257": {
+    "602f2aee3879d07faca8fdd9a416919f60d8b09f42": {
+      "workers": {
+        "app/(sistema)/usuarios/page": {
+          "moduleId": 46000,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "crearUsuario",
+      "filename": "src/app/(sistema)/usuarios/acciones.ts"
+    },
+    "60516e05924379b823b6961a2c6bfb12ae8772b0bd": {
       "workers": {
         "app/(sistema)/usuarios/page": {
           "moduleId": 46000,
@@ -22,7 +33,7 @@
       "exportedName": "restablecerPassword",
       "filename": "src/app/(sistema)/usuarios/acciones.ts"
     },
-    "60958ddb96b48f8174b809c8836646047396f4bd04": {
+    "60f6dee552ffe4cf72eaeb076ffa71290aaa802773": {
       "workers": {
         "app/(sistema)/usuarios/page": {
           "moduleId": 46000,
@@ -31,17 +42,6 @@
         }
       },
       "exportedName": "cambiarEstadoUsuario",
-      "filename": "src/app/(sistema)/usuarios/acciones.ts"
-    },
-    "60fd836bb08cae518229b80e3c2effd82c732ecc2d": {
-      "workers": {
-        "app/(sistema)/usuarios/page": {
-          "moduleId": 46000,
-          "async": false,
-          "codeHash": null
-        }
-      },
-      "exportedName": "crearUsuario",
       "filename": "src/app/(sistema)/usuarios/acciones.ts"
     }
   },

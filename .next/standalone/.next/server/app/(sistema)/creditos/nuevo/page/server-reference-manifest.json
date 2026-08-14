@@ -1,6 +1,6 @@
 {
   "node": {
-    "0037b7a661b33f354b13003a86cb93fc48794d8baa": {
+    "005c3b00e94c17a3a6b2bd3fe1b8315682769778e3": {
       "workers": {
         "app/(sistema)/creditos/nuevo/page": {
           "moduleId": 45490,
@@ -11,7 +11,7 @@
       "exportedName": "salir",
       "filename": "src/app/(sistema)/acciones.ts"
     },
-    "60d529ad5d689107d602a4c4bd31020d302a8cfe2d": {
+    "60cdc77c0b1709b99e7a8469f1d716c2a300d84899": {
       "workers": {
         "app/(sistema)/creditos/nuevo/page": {
           "moduleId": 45490,

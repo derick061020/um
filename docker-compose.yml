@@ -7,8 +7,10 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-um}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-um_local_dev}
       POSTGRES_DB: ${POSTGRES_DB:-um_crm}
+    # Solo escucha en la máquina local: la base de datos NUNCA queda expuesta
+    # a internet. Para conectarse desde fuera se usa un túnel SSH.
     ports:
-      - "${POSTGRES_PORT:-5433}:5432"
+      - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"
     volumes:
       - um_pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -31,8 +33,10 @@ services:
       AUTH_SECRET: ${AUTH_SECRET}
       STORAGE_DIR: /data/archivos
       NODE_ENV: production
+    # Igual que la base: solo local. Quien atiende internet es Caddy, que pone
+    # el HTTPS y reenvía a este puerto.
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     volumes:
       - um_archivos:/data/archivos
 

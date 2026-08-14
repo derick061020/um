@@ -1,6 +1,6 @@
 {
   "node": {
-    "0037b7a661b33f354b13003a86cb93fc48794d8baa": {
+    "005c3b00e94c17a3a6b2bd3fe1b8315682769778e3": {
       "workers": {
         "app/(sistema)/grupos/page": {
           "moduleId": 46760,
@@ -11,7 +11,7 @@
       "exportedName": "salir",
       "filename": "src/app/(sistema)/acciones.ts"
     },
-    "603002bb26a0355e70424ff33bd7eddf726863f408": {
+    "608569718d619990782870cf96fe84e42fb699de0e": {
       "workers": {
         "app/(sistema)/grupos/page": {
           "moduleId": 46760,
@@ -22,18 +22,7 @@
       "exportedName": "cambiarEstadoGrupo",
       "filename": "src/app/(sistema)/grupos/acciones.ts"
     },
-    "605acfdd11611e4c4bc0502a472fb9897eeb8b1b36": {
-      "workers": {
-        "app/(sistema)/grupos/page": {
-          "moduleId": 46760,
-          "async": false,
-          "codeHash": null
-        }
-      },
-      "exportedName": "crearGrupo",
-      "filename": "src/app/(sistema)/grupos/acciones.ts"
-    },
-    "60c0139da678a3a9cfa0c918a563c617b545c89afc": {
+    "60ac9e9109124963a85f449cbef33722966bed8c6a": {
       "workers": {
         "app/(sistema)/grupos/page": {
           "moduleId": 46760,
@@ -42,6 +31,17 @@
         }
       },
       "exportedName": "actualizarGrupo",
+      "filename": "src/app/(sistema)/grupos/acciones.ts"
+    },
+    "60bb5cfa36128d116bb90ed2b0dba7247774c3f37f": {
+      "workers": {
+        "app/(sistema)/grupos/page": {
+          "moduleId": 46760,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "crearGrupo",
       "filename": "src/app/(sistema)/grupos/acciones.ts"
     }
   },

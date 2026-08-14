@@ -1,6 +1,6 @@
 {
   "node": {
-    "0037b7a661b33f354b13003a86cb93fc48794d8baa": {
+    "005c3b00e94c17a3a6b2bd3fe1b8315682769778e3": {
       "workers": {
         "app/(sistema)/clientas/[id]/page": {
           "moduleId": 70316,
@@ -11,7 +11,7 @@
       "exportedName": "salir",
       "filename": "src/app/(sistema)/acciones.ts"
     },
-    "606e7a55234e234d55c3c444a2cab98b625aeb854e": {
+    "606bfc3a2f0963091e681e283fd2660d5a6acb9ebc": {
       "workers": {
         "app/(sistema)/clientas/[id]/page": {
           "moduleId": 70316,
@@ -22,7 +22,7 @@
       "exportedName": "subirDocumento",
       "filename": "src/app/(sistema)/clientas/[id]/documentos.ts"
     },
-    "6004d98b4d1a02892f787ac11656116f471a3e456c": {
+    "6027e618459e63377dff925a4a97a4ee9f4899ce69": {
       "workers": {
         "app/(sistema)/clientas/[id]/page": {
           "moduleId": 70316,
@@ -33,7 +33,7 @@
       "exportedName": "crearClienta",
       "filename": "src/app/(sistema)/clientas/acciones.ts"
     },
-    "600ee2d954f762e190d69a9d4a02728fbaf2e41394": {
+    "603e4f5c6013eb5fe0da7933824d063a6f69f258b0": {
       "workers": {
         "app/(sistema)/clientas/[id]/page": {
           "moduleId": 70316,
@@ -44,7 +44,7 @@
       "exportedName": "actualizarClienta",
       "filename": "src/app/(sistema)/clientas/acciones.ts"
     },
-    "604e956b44b771e6f948266c7bf2213bdef8e14347": {
+    "6048a7d5ef7b3fb1a1738506a1bcc7bb4200e48963": {
       "workers": {
         "app/(sistema)/clientas/[id]/page": {
           "moduleId": 70316,
