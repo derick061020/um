@@ -5,32 +5,36 @@
 <head>
     <meta charset="utf-8">
     <style>
-        @page { margin: 24px; }
-        body { font-family: "DejaVu Sans", sans-serif; color: #252a27; margin: 0; font-size: 10px; }
+        @page { margin: 40px 38px; }
+        body { font-family: "DejaVu Sans", sans-serif; color: #252a27; margin: 0; font-size: 10px; line-height: 1.45; }
 
-        .encabezado { width: 100%; border-bottom: 1.5px solid #2f6b50; padding-bottom: 6px; margin-bottom: 10px; }
+        .encabezado { width: 100%; border-bottom: 1.5px solid #2f6b50; padding-bottom: 12px; margin-bottom: 8px; }
         .encabezado td { vertical-align: middle; }
-        .logo { height: 42px; }
-        .institucion { font-size: 15px; font-weight: bold; color: #16402e; letter-spacing: 1px; }
-        .rotulo { font-size: 8px; color: #2f6b50; letter-spacing: 2px; text-align: right; }
-        .subtitulo { font-size: 11px; color: #2f6b50; margin: 2px 0 0; }
+        .logo { height: 46px; }
+        .institucion { font-size: 16px; font-weight: bold; color: #16402e; letter-spacing: 1px; }
+        .rotulo { font-size: 8.5px; color: #2f6b50; letter-spacing: 2.5px; text-align: right; }
+        .subtitulo { font-size: 11px; color: #2f6b50; margin: 0 0 22px; }
 
-        table.hoja { width: 100%; border-collapse: collapse; }
+        table.hoja { width: 100%; border-collapse: separate; border-spacing: 0; }
         table.hoja th {
             background: #16402e; color: #fff; font-size: 8px; font-weight: normal;
-            padding: 6px 3px; border: 0.5px solid #2f6b50; text-transform: uppercase; letter-spacing: .5px;
+            padding: 10px 6px; border-right: 0.5px solid #3a6b53; text-transform: uppercase; letter-spacing: .6px;
         }
-        table.hoja td { border: 0.5px solid #afc7b9; padding: 6px 4px; vertical-align: top; }
+        table.hoja th:last-child { border-right: 0; }
+        table.hoja td { border-bottom: 0.5px solid #dbe4de; padding: 12px 7px; vertical-align: top; }
+        table.hoja tbody tr:nth-child(even) td { background: #f6f9f7; }
         .grupo { font-weight: bold; color: #16402e; }
+        .grupo .cod { font-weight: normal; color: #7b8781; font-size: 8px; }
         .num { text-align: right; font-variant-numeric: tabular-nums; }
         .debe { font-weight: bold; color: #16402e; }
         .rojo { color: #9c2f2f; }
-        .firma { font-size: 8px; }
+        .firma { font-size: 8px; line-height: 1.5; }
         .firma .quien { font-weight: bold; }
         .firma .sello { color: #2f6b50; }
         .apagado { color: #7b8781; }
 
-        .pie { margin-top: 14px; font-size: 8px; color: #2f6b50; }
+        .pie { margin-top: 26px; font-size: 8px; color: #2f6b50; line-height: 1.7;
+               border-top: 0.5px solid #dbe4de; padding-top: 12px; }
         .pie strong { color: #16402e; }
     </style>
 </head>
@@ -70,7 +74,7 @@
         @forelse ($filas as $f)
             @php $g = $f['grupo']; $e = $f['entrega']; @endphp
             <tr>
-                <td class="grupo">{{ $g->nombre }}<br><span class="apagado" style="font-weight:normal;">{{ $g->codigoFormateado() }}</span></td>
+                <td class="grupo">{{ $g->nombre }}<br><span class="cod">{{ $g->codigoFormateado() }}</span></td>
                 <td>{{ $fecha->format('d/m/y') }}</td>
                 <td class="num">{{ \App\Support\Dinero::pesos($e->prestamo ?? 0) }}</td>
                 <td class="num debe">{{ \App\Support\Dinero::pesos($f['debe']) }}</td>
