@@ -52,6 +52,8 @@ Route::middleware('auth')->group(function () {
     // Entregas semanales del supervisor + cierre del admin
     Route::get('/entregas', [EntregaController::class, 'index'])
         ->middleware('puede:entregas.ver')->name('entregas');
+    Route::get('/entregas/pdf', [EntregaController::class, 'pdf'])
+        ->middleware('puede:entregas.ver')->name('entregas.pdf');
     Route::post('/entregas/{grupo}/capturar', [EntregaController::class, 'capturar'])
         ->middleware('puede:entregas.capturar')->name('entregas.capturar');
     Route::post('/entregas/{entrega}/cerrar', [EntregaController::class, 'cerrar'])

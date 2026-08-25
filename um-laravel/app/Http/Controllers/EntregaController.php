@@ -8,8 +8,10 @@ use App\Services\Bitacora;
 use App\Services\EntregaService;
 use App\Support\Dinero;
 use App\Support\Fechas;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
@@ -31,6 +33,7 @@ class EntregaController extends Controller
         // Cada quien ve solo sus grupos (el admin ve todos).
         $grupos = Grupo::visiblesPara($usuario)
             ->where('activo', true)
+            ->with('encargada:id,nombre')
             ->orderBy('nombre')
             ->get();
 
@@ -65,6 +68,56 @@ class EntregaController extends Controller
             'puedeCapturar' => $usuario->puede('entregas.capturar'),
             'puedeCerrar' => $usuario->puede('cierre.cerrar'),
         ]);
+    }
+
+    /**
+     * Descarga la hoja de entregas de un sábado en PDF, con las columnas del
+     * tarjetón físico. Las firmas se sustituyen por la identificación digital
+     * de quién capturó y quién cerró cada renglón, y al pie queda registrado
+     * quién descargó la hoja y cuándo.
+     */
+    public function pdf(Request $request, EntregaService $servicio): Response
+    {
+        $usuario = Auth::user();
+
+        $sabado = $request->query('fecha')
+            ? Fechas::parse($request->query('fecha'))
+            : Fechas::sabadoDeCobro();
+
+        $grupos = Grupo::visiblesPara($usuario)
+            ->where('activo', true)
+            ->with(['encargada:id,nombre', 'supervisor:id,nombre'])
+            ->orderBy('nombre')
+            ->get();
+
+        $filas = $grupos->map(function (Grupo $g) use ($servicio, $sabado) {
+            $e = EntregaSemanal::where('grupo_id', $g->id)
+                ->whereDate('fecha', $sabado->format('Y-m-d'))
+                ->with(['capturadoPor:id,nombre,usuario', 'cerradoPor:id,nombre,usuario'])
+                ->first();
+
+            $debe = $e?->debe_entregar ?? $servicio->debeEntregar($g->id, $sabado);
+
+            return ['grupo' => $g, 'entrega' => $e, 'debe' => $debe];
+        });
+
+        $pdf = Pdf::loadView('pdf.entregas', [
+            'fecha' => $sabado,
+            'filas' => $filas,
+            'institucion' => env('UM_NOMBRE', 'MUJERES UNIDAS'),
+            'descargadoPor' => $usuario,
+            'generadoEn' => now(),
+        ])->setPaper('letter', 'landscape');
+
+        Bitacora::registrar([
+            'usuario_id' => $usuario->id,
+            'accion' => 'entrega.descargar',
+            'entidad' => 'entrega',
+            'entidad_id' => null,
+            'detalle' => ['fecha' => $sabado->format('Y-m-d'), 'grupos' => $grupos->count()],
+        ]);
+
+        return $pdf->stream('entregas-'.$sabado->format('Y-m-d').'.pdf');
     }
 
     public function capturar(Request $request, Grupo $grupo, EntregaService $servicio): RedirectResponse

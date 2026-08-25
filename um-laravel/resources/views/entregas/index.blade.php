@@ -12,14 +12,19 @@
         <p>Sábado de cobro: {{ ucfirst(Fechas::larga($fecha)) }}. «Debe entregar» lo calcula el sistema; tú solo capturas préstamo, entregó, faltaron y adelantaron.</p>
     </div>
 
-    <form method="GET" class="tarjeta relleno no-imprimir"
-          style="display:flex; gap:.75rem; align-items:end; max-width:26rem; margin-bottom:1.5rem;">
-        <div style="flex:1;">
-            <label class="etiqueta-campo" for="fecha">Ver otro sábado</label>
-            <input type="date" id="fecha" name="fecha" value="{{ $fecha->format('Y-m-d') }}">
-        </div>
-        <button type="submit" class="btn-secundario">Ver</button>
-    </form>
+    <div class="tarjeta relleno no-imprimir"
+         style="display:flex; gap:.75rem; align-items:end; flex-wrap:wrap; margin-bottom:1.5rem;">
+        <form method="GET" style="display:flex; gap:.75rem; align-items:end;">
+            <div>
+                <label class="etiqueta-campo" for="fecha">Ver otro sábado</label>
+                <input type="date" id="fecha" name="fecha" value="{{ $fecha->format('Y-m-d') }}">
+            </div>
+            <button type="submit" class="btn-secundario">Ver</button>
+        </form>
+        <a href="{{ route('entregas.pdf', ['fecha' => $fecha->format('Y-m-d')]) }}" target="_blank" class="btn">
+            Descargar hoja (PDF)
+        </a>
+    </div>
 
     @if ($filas->isEmpty())
         <div class="tarjeta"><div class="vacio"><p>No tienes grupos asignados. Pídele al admin que te asigne uno.</p></div></div>
@@ -48,6 +53,8 @@
                         <th class="num">Adelantado</th>
                         <th class="num">Saldo</th>
                         <th class="num">Comisión</th>
+                        <th>Firma encargada</th>
+                        <th>Firma encargado</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -60,6 +67,22 @@
                         <td class="num">{{ Dinero::pesos($e->adelantado ?? 0) }}</td>
                         <td class="num">{{ ($e->saldo ?? 0) >= 0 ? '+' : '−' }}{{ Dinero::pesos(abs($e->saldo ?? 0)) }}</td>
                         <td class="num">{{ Dinero::pesos($e->comision ?? 0) }}</td>
+                        {{-- Firma = identificación digital de quién manipuló el renglón --}}
+                        <td style="font-size:.75rem;">
+                            <strong>{{ $g->encargada->nombre ?? '—' }}</strong>
+                            <div class="apagado" style="font-size:.6875rem;">encargada del grupo</div>
+                        </td>
+                        <td style="font-size:.75rem;">
+                            @if ($e->exists && $e->cerradoPor)
+                                <strong>{{ $e->cerradoPor->nombre }}</strong>
+                                <div class="apagado" style="font-size:.6875rem;">cerró · {{ $e->cerrado_en?->format('d/m/y H:i') }}</div>
+                            @elseif ($e->exists && $e->capturadoPor)
+                                <strong>{{ $e->capturadoPor->nombre }}</strong>
+                                <div class="apagado" style="font-size:.6875rem;">capturó · {{ $e->updated_at?->format('d/m/y H:i') }}</div>
+                            @else
+                                <span class="apagado">sin capturar</span>
+                            @endif
+                        </td>
                     </tr>
                     </tbody>
                 </table>
