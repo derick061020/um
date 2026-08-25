@@ -65,14 +65,20 @@ class DatabaseSeeder extends Seeder
 
         $viri = Grupo::firstOrCreate(
             ['nombre' => 'VIRI 1'],
-            ['plaza' => 'Mazatlán', 'supervisor_id' => $supervisor->id,
-             'encargada_id' => $encargada->id, 'creado_por_id' => $supervisor->id],
+            ['codigo' => 'GR-000001', 'plaza' => 'Mazatlán', 'estado' => 'Sinaloa',
+             'municipio' => 'Mazatlán', 'zona' => 'Norte', 'colonia' => 'Santa Fe',
+             'ubicacion' => 'Casa de la encargada, esquina Santa Fe y 5 de Mayo',
+             'supervisor_id' => $supervisor->id, 'encargada_id' => $encargada->id,
+             'creado_por_id' => $supervisor->id],
         );
 
         $chihuahua = Grupo::firstOrCreate(
             ['nombre' => 'CHIHUAHUA 1'],
-            ['plaza' => 'Chihuahua', 'supervisor_id' => $supervisor->id,
-             'encargada_id' => $encargada->id, 'creado_por_id' => $supervisor->id],
+            ['codigo' => 'GR-000002', 'plaza' => 'Chihuahua', 'estado' => 'Chihuahua',
+             'municipio' => 'Chihuahua', 'zona' => 'Centro', 'colonia' => 'Centro',
+             'ubicacion' => 'Local de reunión, calle Libertad 120',
+             'supervisor_id' => $supervisor->id, 'encargada_id' => $encargada->id,
+             'creado_por_id' => $supervisor->id],
         );
 
         if (Cliente::count() > 0) {

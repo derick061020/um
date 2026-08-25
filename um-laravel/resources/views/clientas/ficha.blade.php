@@ -17,7 +17,7 @@
         <div class="titulo">
             <h1>{{ $clienta->nombre }}</h1>
             <p>
-                Folio {{ $clienta->folioFormateado() }}
+                {{ $clienta->idPublico() }}
                 @if ($clienta->grupo) · {{ $clienta->grupo->nombre }} @endif
                 @unless ($clienta->activo)
                     · <span class="insignia insignia-neutro">inactiva</span>

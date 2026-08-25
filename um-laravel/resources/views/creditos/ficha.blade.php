@@ -22,10 +22,30 @@
                 · <span class="insignia e-{{ $credito->estado }}">{{ $credito->estado }}</span>
             </p>
         </div>
-        @can('creditos.tarjeton')
-            <a href="{{ route('creditos.tarjeton', $credito) }}" target="_blank" class="btn">Imprimir tarjetón</a>
-        @endcan
+        <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+            @can('renovaciones.procesar')
+                @if ($credito->estaAbierto())
+                    <a href="{{ route('creditos.renovar', $credito) }}" class="btn-secundario">Renovar</a>
+                @endif
+            @endcan
+            @can('creditos.tarjeton')
+                <a href="{{ route('creditos.tarjeton', $credito) }}" target="_blank" class="btn">Imprimir tarjetón</a>
+            @endcan
+        </div>
     </div>
+
+    @if ($credito->renovado_de_id || $credito->renovacion->isNotEmpty())
+        <div class="aviso aviso-info">
+            @if ($credito->renovado_de_id)
+                Es una <strong>renovación</strong> del crédito
+                <a href="{{ route('creditos.ficha', $credito->renovado_de_id) }}">{{ $credito->renovadoDe?->folioFormateado() }}</a>.
+            @endif
+            @foreach ($credito->renovacion as $r)
+                Fue renovado en el crédito
+                <a href="{{ route('creditos.ficha', $r->id) }}">{{ $r->folioFormateado() }}</a>.
+            @endforeach
+        </div>
+    @endif
 
     <div class="rejilla rejilla-4" style="margin-bottom:1.5rem;">
         <div class="indicador">
@@ -110,4 +130,55 @@
             </table>
         </div>
     </section>
+
+    @can('correcciones.aplicar')
+        <section class="tarjeta no-imprimir" style="margin-top:1.5rem; border-color:rgba(156,47,47,.25);">
+            <header><h2 style="color:var(--riesgo);">Corrección del admin</h2></header>
+            <div class="relleno">
+                <p class="ayuda" style="margin-top:0;">
+                    Corrige semanas, montos o estado cuando hubo un error de captura. Se rehace el
+                    calendario conservando el total ya pagado, y el cambio queda en la bitácora con
+                    el valor anterior, el nuevo y el motivo.
+                </p>
+                <form method="POST" action="{{ route('creditos.corregir', $credito) }}"
+                      onsubmit="return confirm('¿Aplicar la corrección? Se rehará el calendario del crédito.')">
+                    @csrf
+                    <div class="rejilla rejilla-3">
+                        <div class="grupo-campo">
+                            <label class="etiqueta-campo">Monto prestado</label>
+                            <input type="text" name="monto_prestado" inputmode="decimal"
+                                   value="{{ Dinero::compacto($credito->monto_prestado) }}">
+                        </div>
+                        <div class="grupo-campo">
+                            <label class="etiqueta-campo">Total a pagar</label>
+                            <input type="text" name="monto_total" inputmode="decimal"
+                                   value="{{ Dinero::compacto($credito->monto_total) }}">
+                        </div>
+                        <div class="grupo-campo">
+                            <label class="etiqueta-campo">Semanas</label>
+                            <input type="number" name="num_semanas" min="1" max="104" value="{{ $credito->num_semanas }}">
+                        </div>
+                        <div class="grupo-campo">
+                            <label class="etiqueta-campo">Lunes de entrega</label>
+                            <input type="date" name="fecha_entrega" value="{{ $credito->fecha_entrega->format('Y-m-d') }}">
+                        </div>
+                        <div class="grupo-campo">
+                            <label class="etiqueta-campo">Estado</label>
+                            <select name="estado">
+                                @foreach (['ACTIVO', 'VENCIDO', 'LIQUIDADO', 'CANCELADO', 'RENOVADO'] as $e)
+                                    <option value="{{ $e }}" @selected($credito->estado === $e)>{{ $e }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="grupo-campo">
+                            <label class="etiqueta-campo">Motivo *</label>
+                            <input type="text" name="motivo" required minlength="4"
+                                   placeholder="Ej.: se capturó a 13 semanas, eran 12">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-peligro">Aplicar corrección</button>
+                </form>
+            </div>
+        </section>
+    @endcan
 @endsection

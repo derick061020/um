@@ -18,15 +18,23 @@
 @php
     // El menú es el mismo del sistema anterior, en el mismo orden.
     $menu = collect([
-        ['ruta' => 'panel',     'texto' => 'Panel',         'permiso' => 'reportes.ver'],
-        ['ruta' => 'corte',     'texto' => 'Cobro del día', 'permiso' => 'corte.dia'],
-        ['ruta' => 'cobranza',  'texto' => 'Cobranza',      'permiso' => 'cobranza.ver'],
-        ['ruta' => 'clientas',  'texto' => 'Clientas',      'permiso' => 'clientas.ver'],
-        ['ruta' => 'creditos',  'texto' => 'Créditos',      'permiso' => 'creditos.ver'],
-        ['ruta' => 'grupos',    'texto' => 'Grupos',        'permiso' => 'grupos.ver'],
-        ['ruta' => 'usuarios',  'texto' => 'Usuarios',      'permiso' => 'usuarios.ver'],
-        ['ruta' => 'bitacora',  'texto' => 'Bitácora',      'permiso' => 'auditoria.ver'],
+        ['ruta' => 'panel',       'texto' => 'Panel',         'permiso' => 'reportes.ver'],
+        ['ruta' => 'encargada',   'texto' => 'Mis clientas',  'permiso' => 'encargada.panel'],
+        ['ruta' => 'entregas',    'texto' => 'Entregas',      'permiso' => 'entregas.ver'],
+        ['ruta' => 'corte',       'texto' => 'Cobro del día', 'permiso' => 'corte.dia'],
+        ['ruta' => 'cobranza',    'texto' => 'Cobranza',      'permiso' => 'cobranza.ver'],
+        ['ruta' => 'clientas',    'texto' => 'Clientas',      'permiso' => 'clientas.ver'],
+        ['ruta' => 'consulta',    'texto' => 'Consultar',     'permiso' => 'clientas.consultar'],
+        ['ruta' => 'creditos',    'texto' => 'Créditos',      'permiso' => 'creditos.ver'],
+        ['ruta' => 'grupos',      'texto' => 'Grupos',        'permiso' => 'grupos.ver'],
+        ['ruta' => 'usuarios',    'texto' => 'Usuarios',      'permiso' => 'usuarios.ver'],
+        ['ruta' => 'bitacora',    'texto' => 'Bitácora',      'permiso' => 'auditoria.ver'],
     ])->filter(fn ($m) => auth()->check() && auth()->user()->puede($m['permiso']));
+
+    // "Consultar" es redundante para quien ya tiene la pantalla completa de Clientas.
+    if (auth()->check() && auth()->user()->puede('clientas.ver')) {
+        $menu = $menu->reject(fn ($m) => $m['ruta'] === 'consulta');
+    }
 
     $iniciales = auth()->check()
         ? collect(preg_split('/\s+/', trim(auth()->user()->nombre)))
@@ -65,10 +73,11 @@
                 <nav class="nav">
                     <ul>
                         @foreach ($menu as $m)
+                            @php $activo = request()->routeIs($m['ruta']) || request()->routeIs($m['ruta'].'.*'); @endphp
                             <li>
                                 <a href="{{ route($m['ruta']) }}"
-                                   @class(['activo' => request()->is($m['ruta'], $m['ruta'].'/*')])
-                                   @if (request()->is($m['ruta'], $m['ruta'].'/*')) aria-current="page" @endif>
+                                   @class(['activo' => $activo])
+                                   @if ($activo) aria-current="page" @endif>
                                     {{ $m['texto'] }}
                                 </a>
                             </li>

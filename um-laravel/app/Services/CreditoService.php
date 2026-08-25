@@ -41,6 +41,7 @@ class CreditoService
                 'fecha_entrega' => $entrega->format('Y-m-d'),
                 'fecha_primer_abono' => $calendario[0]['iso'],
                 'fecha_vencimiento' => $calendario[count($calendario) - 1]['iso'],
+                'estado' => 'ACTIVO',
                 'notas' => $datos['notas'] ?? null,
                 'capturado_por_id' => $datos['capturado_por_id'],
             ]);
@@ -265,5 +266,149 @@ class CreditoService
     public function siguienteFolioCliente(): int
     {
         return $this->siguienteFolio(Cliente::class);
+    }
+
+    /** Saldo pendiente de un crédito, en centavos (nunca negativo). */
+    public function saldoPendiente(Credito $credito): int
+    {
+        $pagado = (int) $credito->abonos()->sum('monto_pagado');
+
+        return max(0, $credito->monto_total - $pagado);
+    }
+
+    /**
+     * Renovación: una clienta liquida su crédito y arranca otro desde la
+     * semana 1. El crédito anterior NO se borra: queda marcado como RENOVADO,
+     * con su historial completo, y el nuevo queda enlazado a él.
+     *
+     * @param  array{grupo_id?:int|null, monto_prestado:int, monto_total:int,
+     *              num_semanas:int, fecha_entrega:string, notas?:string|null}  $datosNuevo
+     * @return array{anterior: Credito, nuevo: Credito, saldo_liquidado: int}
+     */
+    public function renovar(int $creditoAnteriorId, array $datosNuevo, int $usuarioId): array
+    {
+        return DB::transaction(function () use ($creditoAnteriorId, $datosNuevo, $usuarioId) {
+            $anterior = Credito::lockForUpdate()->find($creditoAnteriorId);
+            if (! $anterior) {
+                throw new RuntimeException('No se encontró el crédito anterior.');
+            }
+            if (! $anterior->estaAbierto()) {
+                throw new RuntimeException('Ese crédito ya no está abierto; no se puede renovar.');
+            }
+
+            $saldo = $this->saldoPendiente($anterior);
+
+            // El anterior queda liquidado por renovación, sin perder su historial.
+            $anterior->estado = 'RENOVADO';
+            $anterior->liquidado_en = now();
+            $anterior->notas = trim(($anterior->notas ?? '')
+                ."\nLiquidado por renovación el ".Fechas::hoy()->format('d/m/Y')
+                .'. Saldo liquidado: '.Dinero::pesos($saldo).'.');
+            $anterior->save();
+
+            // Nuevo crédito, semana 1, enlazado al anterior.
+            $nuevo = $this->crear([
+                'cliente_id' => $anterior->cliente_id,
+                'grupo_id' => $datosNuevo['grupo_id'] ?? $anterior->grupo_id,
+                'monto_prestado' => $datosNuevo['monto_prestado'],
+                'monto_total' => $datosNuevo['monto_total'],
+                'num_semanas' => $datosNuevo['num_semanas'],
+                'fecha_entrega' => $datosNuevo['fecha_entrega'],
+                'notas' => $datosNuevo['notas'] ?? null,
+                'capturado_por_id' => $usuarioId,
+            ]);
+
+            $nuevo->renovado_de_id = $anterior->id;
+            $nuevo->es_renovacion = true;
+            $nuevo->save();
+
+            return ['anterior' => $anterior, 'nuevo' => $nuevo, 'saldo_liquidado' => $saldo];
+        });
+    }
+
+    /**
+     * Corrección del admin: reconstruye el calendario del crédito (semanas,
+     * montos, fecha) conservando el total ya pagado, que se reparte de nuevo
+     * sobre los abonos nuevos. Devuelve el antes/después para la bitácora.
+     *
+     * @param  array{monto_prestado?:int, monto_total?:int, num_semanas?:int,
+     *              fecha_entrega?:string, estado?:string, notas?:string|null}  $cambios
+     * @return array{antes: array<string,mixed>, despues: array<string,mixed>}
+     */
+    public function corregir(int $creditoId, array $cambios, int $usuarioId): array
+    {
+        return DB::transaction(function () use ($creditoId, $cambios) {
+            $credito = Credito::with('abonos')->lockForUpdate()->find($creditoId);
+            if (! $credito) {
+                throw new RuntimeException('No se encontró el crédito.');
+            }
+
+            $antes = [
+                'monto_prestado' => $credito->monto_prestado,
+                'monto_total' => $credito->monto_total,
+                'num_semanas' => $credito->num_semanas,
+                'fecha_entrega' => $credito->fecha_entrega->format('Y-m-d'),
+                'estado' => $credito->estado,
+            ];
+
+            $totalPagado = (int) $credito->abonos->sum('monto_pagado');
+
+            $credito->monto_prestado = $cambios['monto_prestado'] ?? $credito->monto_prestado;
+            $credito->monto_total = $cambios['monto_total'] ?? $credito->monto_total;
+            $credito->num_semanas = $cambios['num_semanas'] ?? $credito->num_semanas;
+            if (isset($cambios['estado'])) {
+                $credito->estado = $cambios['estado'];
+            }
+            if (array_key_exists('notas', $cambios)) {
+                $credito->notas = $cambios['notas'];
+            }
+
+            $entrega = isset($cambios['fecha_entrega'])
+                ? Fechas::parse($cambios['fecha_entrega'])
+                : Fechas::parse($credito->fecha_entrega->format('Y-m-d'));
+
+            $calendario = Fechas::generarCalendario($entrega, $credito->num_semanas);
+            $montos = Dinero::repartirAbonos($credito->monto_total, $credito->num_semanas);
+
+            $credito->fecha_entrega = $entrega->format('Y-m-d');
+            $credito->fecha_primer_abono = $calendario[0]['iso'];
+            $credito->fecha_vencimiento = $calendario[count($calendario) - 1]['iso'];
+            $credito->abono_semanal = $montos[0];
+            $credito->save();
+
+            // Se rehace el calendario. Los pagos históricos se conservan (su
+            // abono_id queda en nulo al borrarse el abono); el total pagado se
+            // reparte de nuevo sobre los abonos nuevos, en orden.
+            Abono::where('credito_id', $credito->id)->delete();
+
+            $pool = $totalPagado;
+            $filas = [];
+            foreach ($calendario as $i => $fila) {
+                $aplica = min($pool, $montos[$i]);
+                $pool -= $aplica;
+                $filas[] = [
+                    'credito_id' => $credito->id,
+                    'semana' => $fila['semana'],
+                    'fecha_programada' => $fila['iso'],
+                    'monto_esperado' => $montos[$i],
+                    'monto_pagado' => $aplica,
+                    'estado' => self::estadoDeAbono($aplica, $montos[$i]),
+                    'pagado_en' => $aplica >= $montos[$i] ? now() : null,
+                ];
+            }
+            Abono::insert($filas);
+
+            $this->refrescarCredito($credito->id);
+
+            $despues = [
+                'monto_prestado' => $credito->monto_prestado,
+                'monto_total' => $credito->monto_total,
+                'num_semanas' => $credito->num_semanas,
+                'fecha_entrega' => $credito->fecha_entrega->format('Y-m-d'),
+                'estado' => $credito->fresh()->estado,
+            ];
+
+            return ['antes' => $antes, 'despues' => $despues];
+        });
     }
 }

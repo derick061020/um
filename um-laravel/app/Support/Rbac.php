@@ -22,20 +22,28 @@ class Rbac
         'clientas.crear',
         'clientas.editar',
         'clientas.historial',
+        'clientas.consultar',   // búsqueda de solo lectura (encargada/supervisor)
 
         'creditos.ver',
         'creditos.crear',
         'creditos.editar',
         'creditos.tarjeton',
+        'renovaciones.procesar',
+        'correcciones.aplicar', // corregir semanas, montos, deuda (solo admin)
 
         'cobranza.ver',
         'cobranza.marcar',
         'cobranza.anular',
 
+        'entregas.ver',         // hoja semanal del supervisor
+        'entregas.capturar',    // entregó, faltante, adelantado
+        'cierre.cerrar',        // cerrar la semana del grupo (solo admin)
+
         'documentos.ver',
         'documentos.subir',
 
-        'corte.dia',      // total a cobrar del día
+        'corte.dia',        // total a cobrar del día
+        'encargada.panel',  // pantalla de la encargada (sus clientas)
         'reportes.ver',
         'auditoria.ver',
     ];
@@ -54,28 +62,37 @@ class Rbac
             // Dirección: hace todo, y es la única que da de alta usuarios.
             self::PRINCIPAL => self::PERMISOS,
 
-            // Supervisor: arma y administra los grupos (VIRI 1, CHIHUAHUA 1...) y su cartera.
+            // Supervisor: SOLO ve los grupos que le asignó el admin y, en cada
+            // uno, cuánto debe entregar. Lo único que captura es préstamo,
+            // entregó, faltaron y adelantaron (más qué clientas). No mueve nada
+            // más: ni deudas, ni semanas, ni información administrativa.
             self::SUPERVISOR => [
-                'grupos.ver', 'grupos.crear', 'grupos.editar',
-                'clientas.ver', 'clientas.crear', 'clientas.editar', 'clientas.historial',
-                'creditos.ver', 'creditos.crear', 'creditos.editar', 'creditos.tarjeton',
-                'cobranza.ver', 'cobranza.marcar', 'cobranza.anular',
-                'documentos.ver', 'documentos.subir',
-                'corte.dia', 'reportes.ver',
-                'usuarios.ver',
+                'entregas.ver', 'entregas.capturar',
             ],
 
-            // Capturista: alta de clienta y aval, historial y marcado de abonos del sábado.
+            // Capturista: mano derecha del admin en captura. Da de alta clientas,
+            // créditos y renovaciones, y marca abonos. No hace correcciones
+            // sensibles ni cierra semanas (eso es exclusivo del admin).
             self::CAPTURISTA => [
-                'grupos.ver',
-                'clientas.ver', 'clientas.crear', 'clientas.editar', 'clientas.historial',
-                'creditos.ver', 'creditos.crear', 'creditos.tarjeton',
+                'grupos.ver', 'grupos.crear', 'grupos.editar',
+                'clientas.ver', 'clientas.crear', 'clientas.editar',
+                'clientas.historial', 'clientas.consultar',
+                'creditos.ver', 'creditos.crear', 'creditos.editar',
+                'creditos.tarjeton', 'renovaciones.procesar',
                 'cobranza.ver', 'cobranza.marcar',
+                'entregas.ver',
                 'documentos.ver', 'documentos.subir',
+                'reportes.ver',
             ],
 
-            // Encargada: únicamente el total a cobrar del día.
-            self::ENCARGADA => ['corte.dia'],
+            // Encargada: trabaja con sus clientas. Ve sus clientas, el abono y la
+            // semana de cada una, y puede buscar a una clienta para revisar su
+            // historial. No modifica nada financiero.
+            self::ENCARGADA => [
+                'encargada.panel',
+                'clientas.consultar',
+                'corte.dia',
+            ],
         ];
     }
 
@@ -122,10 +139,10 @@ class Rbac
     public static function descripciones(): array
     {
         return [
-            self::PRINCIPAL => 'Dirección. Crea usuarios y ve toda la operación.',
-            self::SUPERVISOR => 'Crea y administra grupos, clientas, créditos y cobranza.',
-            self::CAPTURISTA => 'Da de alta clientas y avales, consulta historial y marca los abonos del sábado.',
-            self::ENCARGADA => 'Solo consulta el total a cobrar del día.',
+            self::PRINCIPAL => 'Admin / Capturista. Captura, corrige, cierra semanas y ve toda la operación.',
+            self::SUPERVISOR => 'Da seguimiento a sus grupos: recoge el dinero y registra entregas y diferencias.',
+            self::CAPTURISTA => 'Da de alta clientas, créditos y renovaciones, y marca los abonos del sábado.',
+            self::ENCARGADA => 'Ve sus clientas, su abono y su semana; puede consultar historial.',
         ];
     }
 
@@ -133,7 +150,8 @@ class Rbac
     public static function rutaInicio(string $rol): string
     {
         return match ($rol) {
-            self::ENCARGADA => '/corte',
+            self::ENCARGADA => '/mis-clientas',
+            self::SUPERVISOR => '/entregas',
             self::CAPTURISTA => '/cobranza',
             default => '/panel',
         };

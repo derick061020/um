@@ -36,3 +36,6 @@ Thumbs.db
 /prueba_pdf.php
 # Respaldos que genera scripts/desplegar.sh en el servidor
 /respaldos
+
+# Cookies de pruebas manuales con curl
+/c_*.txt

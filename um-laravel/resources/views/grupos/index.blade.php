@@ -17,8 +17,9 @@
                 <table class="tabla">
                     <thead>
                     <tr>
+                        <th>Código</th>
                         <th>Grupo</th>
-                        <th>Plaza</th>
+                        <th>Ubicación</th>
                         <th>Supervisor</th>
                         <th>Encargada</th>
                         <th class="num">Clientas</th>
@@ -28,8 +29,12 @@
                     <tbody>
                     @foreach ($grupos as $g)
                         <tr>
+                            <td class="apagado">{{ $g->codigoFormateado() }}</td>
                             <td style="font-weight:500; color:var(--patrimonio);">{{ $g->nombre }}</td>
-                            <td>{{ $g->plaza ?? '—' }}</td>
+                            <td>
+                                {{ $g->municipio ?? $g->plaza ?? '—' }}
+                                @if ($g->zona)<div class="apagado" style="font-size:.6875rem;">Zona {{ $g->zona }}</div>@endif
+                            </td>
                             <td>{{ $g->supervisor->nombre ?? '—' }}</td>
                             <td>{{ $g->encargada->nombre ?? '—' }}</td>
                             <td class="num">{{ $g->clientas_count }}</td>
@@ -51,30 +56,52 @@
             <header><h2>Nuevo grupo</h2></header>
             <form method="POST" action="{{ route('grupos.guardar') }}" class="relleno">
                 @csrf
-                <div class="rejilla rejilla-2">
+                <p class="ayuda" style="margin-top:0;">Un grupo no se crea sin ubicación, zona y encargada. El código se genera solo si lo dejas en blanco.</p>
+                <div class="rejilla rejilla-3">
+                    <div class="grupo-campo">
+                        <label class="etiqueta-campo" for="codigo">Código</label>
+                        <input type="text" id="codigo" name="codigo" placeholder="GR-000001 (auto)" value="{{ old('codigo') }}">
+                    </div>
                     <div class="grupo-campo">
                         <label class="etiqueta-campo" for="nombre">Nombre *</label>
                         <input type="text" id="nombre" name="nombre" required placeholder="VIRI 1" value="{{ old('nombre') }}">
                     </div>
                     <div class="grupo-campo">
-                        <label class="etiqueta-campo" for="plaza">Plaza</label>
-                        <input type="text" id="plaza" name="plaza" placeholder="Mazatlán" value="{{ old('plaza') }}">
+                        <label class="etiqueta-campo" for="estado">Estado</label>
+                        <input type="text" id="estado" name="estado" placeholder="Sinaloa" value="{{ old('estado') }}">
+                    </div>
+                    <div class="grupo-campo">
+                        <label class="etiqueta-campo" for="municipio">Municipio</label>
+                        <input type="text" id="municipio" name="municipio" placeholder="Mazatlán" value="{{ old('municipio') }}">
+                    </div>
+                    <div class="grupo-campo">
+                        <label class="etiqueta-campo" for="colonia">Colonia</label>
+                        <input type="text" id="colonia" name="colonia" placeholder="Santa Fe" value="{{ old('colonia') }}">
+                    </div>
+                    <div class="grupo-campo">
+                        <label class="etiqueta-campo" for="zona">Zona *</label>
+                        <input type="text" id="zona" name="zona" required placeholder="Norte" value="{{ old('zona') }}">
+                    </div>
+                    <div class="grupo-campo" style="grid-column:1/-1;">
+                        <label class="etiqueta-campo" for="ubicacion">Ubicación *</label>
+                        <input type="text" id="ubicacion" name="ubicacion" required
+                               placeholder="Referencia del punto de reunión" value="{{ old('ubicacion') }}">
                     </div>
                     <div class="grupo-campo">
                         <label class="etiqueta-campo" for="supervisor_id">Supervisor</label>
                         <select id="supervisor_id" name="supervisor_id">
                             <option value="">Sin asignar</option>
                             @foreach ($supervisores as $u)
-                                <option value="{{ $u->id }}">{{ $u->nombre }}</option>
+                                <option value="{{ $u->id }}" @selected(old('supervisor_id') == $u->id)>{{ $u->nombre }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div class="grupo-campo">
-                        <label class="etiqueta-campo" for="encargada_id">Encargada</label>
-                        <select id="encargada_id" name="encargada_id">
-                            <option value="">Sin asignar</option>
+                        <label class="etiqueta-campo" for="encargada_id">Encargada *</label>
+                        <select id="encargada_id" name="encargada_id" required>
+                            <option value="">Elige una encargada…</option>
                             @foreach ($encargadas as $u)
-                                <option value="{{ $u->id }}">{{ $u->nombre }}</option>
+                                <option value="{{ $u->id }}" @selected(old('encargada_id') == $u->id)>{{ $u->nombre }}</option>
                             @endforeach
                         </select>
                     </div>

@@ -133,12 +133,154 @@ class CreditoController extends Controller
 
     public function ficha(Credito $credito): View
     {
-        $credito->load(['cliente', 'grupo:id,nombre', 'abonos', 'capturadoPor:id,nombre']);
+        $credito->load([
+            'cliente', 'grupo:id,nombre', 'abonos', 'capturadoPor:id,nombre',
+            'renovadoDe:id,folio', 'renovacion:id,folio,renovado_de_id',
+        ]);
 
         return view('creditos.ficha', [
             'credito' => $credito,
             'resumen' => CreditoService::resumir($credito, $credito->abonos),
         ]);
+    }
+
+    // --- Renovación ---------------------------------------------------------
+
+    public function renovarForm(Credito $credito, CreditoService $servicio): View|RedirectResponse
+    {
+        if (! $credito->estaAbierto()) {
+            return redirect()->route('creditos.ficha', $credito)
+                ->withErrors(['credito' => 'Solo se puede renovar un crédito abierto.']);
+        }
+
+        $credito->load(['cliente', 'abonos']);
+
+        return view('creditos.renovar', [
+            'credito' => $credito,
+            'saldo' => $servicio->saldoPendiente($credito),
+            'calendario' => null,
+        ]);
+    }
+
+    public function renovar(Request $request, Credito $credito, CreditoService $servicio): View|RedirectResponse
+    {
+        if (! $credito->estaAbierto()) {
+            return redirect()->route('creditos.ficha', $credito)
+                ->withErrors(['credito' => 'Solo se puede renovar un crédito abierto.']);
+        }
+
+        $datos = $request->validate([
+            'monto_prestado' => ['required', 'string'],
+            'monto_total' => ['required', 'string'],
+            'num_semanas' => ['required', 'integer', 'min:1', 'max:104'],
+            'fecha_entrega' => ['required', 'date_format:Y-m-d'],
+            'notas' => ['nullable', 'string', 'max:1000'],
+        ], [], [
+            'monto_prestado' => 'monto prestado',
+            'monto_total' => 'total a pagar',
+            'fecha_entrega' => 'fecha de entrega',
+        ]);
+
+        try {
+            $prestado = Dinero::aCentavos($datos['monto_prestado']);
+            $total = Dinero::aCentavos($datos['monto_total']);
+            $entrega = Fechas::parse($datos['fecha_entrega']);
+        } catch (\InvalidArgumentException $e) {
+            return back()->withInput()->withErrors(['monto_prestado' => $e->getMessage()]);
+        }
+
+        if ($total < $prestado) {
+            return back()->withInput()->withErrors(['monto_total' => 'El total a pagar no puede ser menor a lo prestado.']);
+        }
+
+        $semanas = (int) $datos['num_semanas'];
+        $calendario = Fechas::generarCalendario($entrega, $semanas);
+        $montos = Dinero::repartirAbonos($total, $semanas);
+
+        // Sin confirmar: se muestra el calendario del nuevo crédito para revisarlo.
+        if (! $request->boolean('confirmar')) {
+            $credito->load(['cliente', 'abonos']);
+
+            return view('creditos.renovar', [
+                'credito' => $credito,
+                'saldo' => $servicio->saldoPendiente($credito),
+                'calendario' => $calendario,
+                'montos' => $montos,
+                'entrega' => $entrega,
+                'datos' => $datos,
+            ]);
+        }
+
+        $res = $servicio->renovar($credito->id, [
+            'grupo_id' => $credito->grupo_id,
+            'monto_prestado' => $prestado,
+            'monto_total' => $total,
+            'num_semanas' => $semanas,
+            'fecha_entrega' => $datos['fecha_entrega'],
+            'notas' => $datos['notas'] ?? null,
+        ], Auth::id());
+
+        Bitacora::registrar([
+            'usuario_id' => Auth::id(),
+            'accion' => 'credito.renovar',
+            'entidad' => 'credito',
+            'entidad_id' => (string) $res['nuevo']->id,
+            'detalle' => [
+                'anterior' => $res['anterior']->folio,
+                'nuevo' => $res['nuevo']->folio,
+                'saldo_liquidado' => Dinero::pesos($res['saldo_liquidado']),
+            ],
+        ]);
+
+        return redirect()->route('creditos.ficha', $res['nuevo'])->with('exito',
+            'Renovación hecha: el crédito '.$res['anterior']->folioFormateado()
+            .' quedó liquidado y arranca el '.$res['nuevo']->folioFormateado().' en la semana 1.');
+    }
+
+    // --- Corrección del admin ----------------------------------------------
+
+    public function corregir(Request $request, Credito $credito, CreditoService $servicio): RedirectResponse
+    {
+        $datos = $request->validate([
+            'monto_prestado' => ['required', 'string'],
+            'monto_total' => ['required', 'string'],
+            'num_semanas' => ['required', 'integer', 'min:1', 'max:104'],
+            'fecha_entrega' => ['required', 'date_format:Y-m-d'],
+            'estado' => ['required', 'in:ACTIVO,VENCIDO,LIQUIDADO,CANCELADO,RENOVADO'],
+            'motivo' => ['required', 'string', 'min:4', 'max:300'],
+            'notas' => ['nullable', 'string', 'max:1000'],
+        ], [], ['motivo' => 'motivo de la corrección']);
+
+        try {
+            $cambios = [
+                'monto_prestado' => Dinero::aCentavos($datos['monto_prestado']),
+                'monto_total' => Dinero::aCentavos($datos['monto_total']),
+                'num_semanas' => (int) $datos['num_semanas'],
+                'fecha_entrega' => $datos['fecha_entrega'],
+                'estado' => $datos['estado'],
+                'notas' => $datos['notas'] ?? $credito->notas,
+            ];
+        } catch (\InvalidArgumentException $e) {
+            return back()->withErrors(['monto_prestado' => $e->getMessage()]);
+        }
+
+        $res = $servicio->corregir($credito->id, $cambios, Auth::id());
+
+        // Bitácora sensible: usuario, fecha, valor anterior, valor nuevo y motivo.
+        Bitacora::registrar([
+            'usuario_id' => Auth::id(),
+            'accion' => 'credito.corregir',
+            'entidad' => 'credito',
+            'entidad_id' => (string) $credito->id,
+            'detalle' => [
+                'motivo' => $datos['motivo'],
+                'antes' => $res['antes'],
+                'despues' => $res['despues'],
+            ],
+        ]);
+
+        return redirect()->route('creditos.ficha', $credito)
+            ->with('exito', 'Crédito corregido. El cambio quedó registrado en la bitácora.');
     }
 
     /** @return array<string, mixed> */

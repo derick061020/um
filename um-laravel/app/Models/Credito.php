@@ -15,7 +15,7 @@ class Credito extends Model
     protected $table = 'creditos';
 
     protected $fillable = [
-        'folio', 'cliente_id', 'grupo_id',
+        'folio', 'cliente_id', 'grupo_id', 'renovado_de_id', 'es_renovacion',
         'monto_prestado', 'monto_total', 'abono_semanal', 'num_semanas',
         'fecha_entrega', 'fecha_primer_abono', 'fecha_vencimiento',
         'estado', 'liquidado_en', 'notas', 'capturado_por_id',
@@ -28,7 +28,25 @@ class Credito extends Model
             'fecha_primer_abono' => 'date',
             'fecha_vencimiento' => 'date',
             'liquidado_en' => 'datetime',
+            'es_renovacion' => 'boolean',
         ];
+    }
+
+    /** El crédito anterior del que salió esta renovación. */
+    public function renovadoDe(): BelongsTo
+    {
+        return $this->belongsTo(Credito::class, 'renovado_de_id');
+    }
+
+    /** La renovación que reemplazó a este crédito, si la hubo. */
+    public function renovacion(): HasMany
+    {
+        return $this->hasMany(Credito::class, 'renovado_de_id');
+    }
+
+    public function estaAbierto(): bool
+    {
+        return in_array($this->estado, ['ACTIVO', 'VENCIDO'], true);
     }
 
     public function cliente(): BelongsTo

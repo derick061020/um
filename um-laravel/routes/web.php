@@ -4,9 +4,12 @@ use App\Http\Controllers\AccesoController;
 use App\Http\Controllers\BitacoraController;
 use App\Http\Controllers\ClientaController;
 use App\Http\Controllers\CobranzaController;
+use App\Http\Controllers\ConsultaController;
 use App\Http\Controllers\CorteController;
 use App\Http\Controllers\CreditoController;
 use App\Http\Controllers\DocumentoController;
+use App\Http\Controllers\EncargadaController;
+use App\Http\Controllers\EntregaController;
 use App\Http\Controllers\GrupoController;
 use App\Http\Controllers\PanelController;
 use App\Http\Controllers\TarjetonController;
@@ -35,6 +38,26 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/corte', [CorteController::class, 'index'])
         ->middleware('puede:corte.dia')->name('corte');
+
+    // Pantalla de la encargada: sus clientas del sábado
+    Route::get('/mis-clientas', [EncargadaController::class, 'index'])
+        ->middleware('puede:encargada.panel')->name('encargada');
+
+    // Consulta de clientas de solo lectura (encargada / supervisor)
+    Route::get('/consulta', [ConsultaController::class, 'index'])
+        ->middleware('puede:clientas.consultar')->name('consulta');
+    Route::get('/consulta/{cliente}', [ConsultaController::class, 'ver'])
+        ->middleware('puede:clientas.consultar')->name('consulta.ver');
+
+    // Entregas semanales del supervisor + cierre del admin
+    Route::get('/entregas', [EntregaController::class, 'index'])
+        ->middleware('puede:entregas.ver')->name('entregas');
+    Route::post('/entregas/{grupo}/capturar', [EntregaController::class, 'capturar'])
+        ->middleware('puede:entregas.capturar')->name('entregas.capturar');
+    Route::post('/entregas/{entrega}/cerrar', [EntregaController::class, 'cerrar'])
+        ->middleware('puede:cierre.cerrar')->name('entregas.cerrar');
+    Route::post('/entregas/{entrega}/reabrir', [EntregaController::class, 'reabrir'])
+        ->middleware('puede:cierre.cerrar')->name('entregas.reabrir');
 
     // Clientas
     Route::get('/clientas', [ClientaController::class, 'index'])
@@ -69,6 +92,16 @@ Route::middleware('auth')->group(function () {
         ->middleware('puede:creditos.ver')->name('creditos.ficha');
     Route::get('/creditos/{credito}/tarjeton', [TarjetonController::class, 'pdf'])
         ->middleware('puede:creditos.tarjeton')->name('creditos.tarjeton');
+
+    // Renovación de crédito
+    Route::get('/creditos/{credito}/renovar', [CreditoController::class, 'renovarForm'])
+        ->middleware('puede:renovaciones.procesar')->name('creditos.renovar');
+    Route::post('/creditos/{credito}/renovar', [CreditoController::class, 'renovar'])
+        ->middleware('puede:renovaciones.procesar')->name('creditos.renovar.guardar');
+
+    // Corrección del admin (semanas, montos, deuda) con bitácora
+    Route::post('/creditos/{credito}/corregir', [CreditoController::class, 'corregir'])
+        ->middleware('puede:correcciones.aplicar')->name('creditos.corregir');
 
     // Cobranza del sábado
     Route::get('/cobranza', [CobranzaController::class, 'index'])

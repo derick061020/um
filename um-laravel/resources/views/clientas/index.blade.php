@@ -40,7 +40,7 @@
                 <table class="tabla">
                     <thead>
                     <tr>
-                        <th class="num">Folio</th>
+                        <th>ID</th>
                         <th>Nombre</th>
                         <th>Grupo</th>
                         <th>Aval</th>
@@ -52,7 +52,7 @@
                     <tbody>
                     @foreach ($clientas as $c)
                         <tr>
-                            <td class="num apagado">{{ $c->folioFormateado() }}</td>
+                            <td class="apagado">{{ $c->idPublico() }}</td>
                             <td>
                                 <a href="{{ route('clientas.ficha', $c) }}"
                                    style="font-weight:500; color:var(--patrimonio); text-decoration:none;">

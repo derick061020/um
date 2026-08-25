@@ -51,6 +51,21 @@ class Cliente extends Model
         return str_pad((string) $this->folio, 4, '0', STR_PAD_LEFT);
     }
 
+    /** Identificador único de clienta, como pide el resumen: CL-000123. */
+    public function idPublico(): string
+    {
+        return 'CL-'.str_pad((string) $this->folio, 6, '0', STR_PAD_LEFT);
+    }
+
+    /** Crédito abierto (activo o vencido), si tiene uno. */
+    public function creditoAbierto(): ?Credito
+    {
+        return $this->creditos()
+            ->whereIn('estado', ['ACTIVO', 'VENCIDO'])
+            ->latest('fecha_entrega')
+            ->first();
+    }
+
     /**
      * Documentos obligatorios que todavía faltan en el expediente.
      *
