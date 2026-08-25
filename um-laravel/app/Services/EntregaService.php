@@ -116,6 +116,60 @@ class EntregaService
         });
     }
 
+    /**
+     * Renovaciones de un grupo cuyo primer abono cae en ese sábado, juntas
+     * (punto 6: comparar las que renovaron la misma semana).
+     *
+     * @return \Illuminate\Support\Collection<int, \App\Models\Credito>
+     */
+    public function renovacionesDelSabado(int $grupoId, DateTimeImmutable $sabado)
+    {
+        return \App\Models\Credito::where('grupo_id', $grupoId)
+            ->where('es_renovacion', true)
+            ->whereDate('fecha_primer_abono', $sabado->format('Y-m-d'))
+            ->with(['cliente:id,nombre,folio', 'renovadoDe:id,folio'])
+            ->orderBy('folio')
+            ->get();
+    }
+
+    /**
+     * Resumen del cierre semanal de un grupo, con el dinero físico separado de
+     * lo liquidado por renovación (punto 7). Así el cierre cuadra.
+     *
+     * @return array<string, mixed>
+     */
+    public function resumenCierre(int $grupoId, DateTimeImmutable $sabado): array
+    {
+        $entrega = EntregaSemanal::where('grupo_id', $grupoId)
+            ->whereDate('fecha', $sabado->format('Y-m-d'))->first();
+
+        $renovaciones = $this->renovacionesDelSabado($grupoId, $sabado);
+
+        $debeCobrar = $this->debeEntregar($grupoId, $sabado);
+        $cobradoNormal = $this->cobradoDelSabado($grupoId, $sabado);
+
+        $saldosLiquidados = (int) $renovaciones->sum('descuento_renovacion');
+        $netoRenovados = (int) $renovaciones->sum(fn ($c) => $c->netoEntregado());
+
+        $entrego = (int) ($entrega->entrego ?? 0);
+        $adelantos = (int) ($entrega->adelantado ?? 0);
+        $faltantes = (int) ($entrega->faltante ?? 0);
+
+        return [
+            'debe_cobrar' => $debeCobrar,
+            'cobrado_normal' => $cobradoNormal,
+            'adelantos' => $adelantos,
+            'renovaciones' => $renovaciones,          // colección para listarlas
+            'renovaciones_count' => $renovaciones->count(),
+            'saldos_liquidados' => $saldosLiquidados,  // NO es dinero físico
+            'neto_renovados' => $netoRenovados,        // dinero que salió a la clienta
+            'faltantes' => $faltantes,
+            'entrego_fisico' => $entrego,
+            'diferencia' => $entrego - $debeCobrar,
+            'entrega' => $entrega,
+        ];
+    }
+
     /** Reabrir una semana cerrada (solo admin, deja rastro en bitácora aparte). */
     public function reabrir(EntregaSemanal $entrega): EntregaSemanal
     {

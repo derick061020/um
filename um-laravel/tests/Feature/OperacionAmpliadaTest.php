@@ -52,8 +52,8 @@ class OperacionAmpliadaTest extends TestCase
         $cli = Cliente::create(['folio' => $s->siguienteFolioCliente(), 'nombre' => 'RENUEVA', 'capturado_por_id' => $admin->id]);
 
         $anterior = $this->creditoDe($cli, $s);
-        // Paga 8 de 12 semanas.
-        foreach ($anterior->abonos()->take(8)->get() as $a) {
+        // Paga 11 de 12 semanas: la renovación solo se activa en el último pago.
+        foreach ($anterior->abonos()->take(11)->get() as $a) {
             $s->marcarCompleto($a->id, $admin->id);
         }
 
@@ -68,7 +68,7 @@ class OperacionAmpliadaTest extends TestCase
         $anteriorFresco = Credito::find($anterior->id);
         $this->assertSame('RENOVADO', $anteriorFresco->estado, 'el anterior queda RENOVADO');
         $this->assertNotNull($anteriorFresco->liquidado_en, 'con fecha de liquidación');
-        $this->assertSame(8, $anteriorFresco->abonos()->where('estado', 'PAGADO')->count(), 'conserva sus 8 semanas pagadas');
+        $this->assertSame(11, $anteriorFresco->abonos()->where('estado', 'PAGADO')->count(), 'conserva sus 11 semanas pagadas');
 
         $nuevo = $res['nuevo'];
         $this->assertTrue($nuevo->es_renovacion, 'el nuevo está marcado como renovación');
@@ -77,8 +77,8 @@ class OperacionAmpliadaTest extends TestCase
         $this->assertSame(12, $nuevo->abonos()->count(), 'con su calendario completo');
         $this->assertSame(0, (int) $nuevo->abonos()->sum('monto_pagado'), 'el nuevo empieza sin pagos (semana 1)');
 
-        // El saldo liquidado son las 4 semanas que faltaban: 4 × $300 = $1,200.
-        $this->assertSame(120_000, $res['saldo_liquidado'], 'el saldo liquidado es el pendiente del anterior');
+        // El saldo liquidado es la semana que faltaba: 1 × $300 = $300.
+        $this->assertSame(30_000, $res['saldo_liquidado'], 'el saldo liquidado es el pendiente del anterior');
     }
 
     public function test_no_se_renueva_un_credito_ya_cerrado(): void

@@ -72,6 +72,8 @@ Route::middleware('auth')->group(function () {
         ->middleware('puede:clientas.ver')->name('clientas.ficha');
     Route::post('/clientas/{cliente}/editar', [ClientaController::class, 'actualizar'])
         ->middleware('puede:clientas.editar')->name('clientas.actualizar');
+    Route::delete('/clientas/{cliente}', [ClientaController::class, 'borrar'])
+        ->middleware('puede:correcciones.aplicar')->name('clientas.borrar');
 
     // Documentos del expediente
     Route::post('/clientas/{cliente}/documentos', [DocumentoController::class, 'subir'])
@@ -104,6 +106,8 @@ Route::middleware('auth')->group(function () {
     // Corrección del admin (semanas, montos, deuda) con bitácora
     Route::post('/creditos/{credito}/corregir', [CreditoController::class, 'corregir'])
         ->middleware('puede:correcciones.aplicar')->name('creditos.corregir');
+    Route::post('/creditos/{credito}/ajustar-abono', [CreditoController::class, 'ajustarAbono'])
+        ->middleware('puede:correcciones.aplicar')->name('creditos.ajustar_abono');
 
     // Cobranza del sábado
     Route::get('/cobranza', [CobranzaController::class, 'index'])
@@ -122,6 +126,12 @@ Route::middleware('auth')->group(function () {
         ->middleware('puede:grupos.crear')->name('grupos.guardar');
     Route::post('/grupos/{grupo}/editar', [GrupoController::class, 'actualizar'])
         ->middleware('puede:grupos.editar')->name('grupos.actualizar');
+    Route::post('/grupos/{grupo}/archivar', [GrupoController::class, 'archivar'])
+        ->middleware('puede:grupos.editar')->name('grupos.archivar');
+    Route::post('/grupos/{grupo}/reactivar', [GrupoController::class, 'reactivar'])
+        ->middleware('puede:grupos.editar')->name('grupos.reactivar');
+    Route::delete('/grupos/{grupo}', [GrupoController::class, 'borrar'])
+        ->middleware('puede:correcciones.aplicar')->name('grupos.borrar');
 
     // Usuarios
     Route::get('/usuarios', [UsuarioController::class, 'index'])

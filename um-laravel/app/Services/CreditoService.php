@@ -268,6 +268,56 @@ class CreditoService
         return $this->siguienteFolio(Cliente::class);
     }
 
+    /**
+     * Cambia el abono semanal a partir de una semana. Los abonos YA COBRADOS
+     * conservan su monto original; el nuevo monto se aplica desde la semana
+     * seleccionada en adelante (solo a los que no están pagados). El total de
+     * la tarjeta se recalcula automáticamente.
+     *
+     * @return array{antes: array<string,mixed>, despues: array<string,mixed>}
+     */
+    public function ajustarAbono(int $creditoId, int $desdeSemana, int $nuevoAbono, int $usuarioId): array
+    {
+        if ($nuevoAbono <= 0) {
+            throw new RuntimeException('El nuevo abono debe ser mayor a cero.');
+        }
+
+        return DB::transaction(function () use ($creditoId, $desdeSemana, $nuevoAbono) {
+            $credito = Credito::with('abonos')->lockForUpdate()->find($creditoId);
+            if (! $credito) {
+                throw new RuntimeException('No se encontró el crédito.');
+            }
+
+            $antes = ['abono_semanal' => $credito->abono_semanal, 'monto_total' => $credito->monto_total];
+
+            foreach ($credito->abonos as $abono) {
+                // Los ya cobrados no se tocan: conservan su monto original.
+                if ($abono->semana < $desdeSemana || $abono->estado === 'PAGADO') {
+                    continue;
+                }
+
+                $abono->monto_esperado = $nuevoAbono;
+                $abono->estado = self::estadoDeAbono($abono->monto_pagado, $nuevoAbono);
+                $abono->pagado_en = $abono->monto_pagado >= $nuevoAbono ? ($abono->pagado_en ?? now()) : null;
+                $abono->save();
+            }
+
+            // El total de la tarjeta = suma de todos los abonos (viejos + nuevos).
+            $credito->monto_total = (int) $credito->abonos()->sum('monto_esperado');
+            $credito->abono_semanal = $nuevoAbono;
+            $credito->save();
+
+            $this->refrescarCredito($credito->id);
+
+            $fresco = $credito->fresh();
+
+            return [
+                'antes' => $antes,
+                'despues' => ['abono_semanal' => $nuevoAbono, 'monto_total' => $fresco->monto_total],
+            ];
+        });
+    }
+
     /** Saldo pendiente de un crédito, en centavos (nunca negativo). */
     public function saldoPendiente(Credito $credito): int
     {
@@ -288,12 +338,19 @@ class CreditoService
     public function renovar(int $creditoAnteriorId, array $datosNuevo, int $usuarioId): array
     {
         return DB::transaction(function () use ($creditoAnteriorId, $datosNuevo, $usuarioId) {
-            $anterior = Credito::lockForUpdate()->find($creditoAnteriorId);
+            $anterior = Credito::with('abonos')->lockForUpdate()->find($creditoAnteriorId);
             if (! $anterior) {
                 throw new RuntimeException('No se encontró el crédito anterior.');
             }
             if (! $anterior->estaAbierto()) {
                 throw new RuntimeException('Ese crédito ya no está abierto; no se puede renovar.');
+            }
+            // Solo en el último pago: le queda a lo sumo un abono por cubrir.
+            if (! $anterior->puedeRenovar()) {
+                throw new RuntimeException(
+                    'La renovación solo se activa en el último pago. A esta clienta le faltan '
+                    .$anterior->pendientes().' pagos por cubrir.'
+                );
             }
 
             $saldo = $this->saldoPendiente($anterior);
@@ -306,7 +363,8 @@ class CreditoService
                 .'. Saldo liquidado: '.Dinero::pesos($saldo).'.');
             $anterior->save();
 
-            // Nuevo crédito, semana 1, enlazado al anterior.
+            // Nuevo crédito, semana 1, enlazado al anterior. El descuento por
+            // renovación se guarda para poder calcular el neto y cuadrar el cierre.
             $nuevo = $this->crear([
                 'cliente_id' => $anterior->cliente_id,
                 'grupo_id' => $datosNuevo['grupo_id'] ?? $anterior->grupo_id,
@@ -320,9 +378,15 @@ class CreditoService
 
             $nuevo->renovado_de_id = $anterior->id;
             $nuevo->es_renovacion = true;
+            $nuevo->descuento_renovacion = $saldo;
             $nuevo->save();
 
-            return ['anterior' => $anterior, 'nuevo' => $nuevo, 'saldo_liquidado' => $saldo];
+            return [
+                'anterior' => $anterior,
+                'nuevo' => $nuevo,
+                'saldo_liquidado' => $saldo,
+                'neto_entregado' => $nuevo->netoEntregado(),
+            ];
         });
     }
 

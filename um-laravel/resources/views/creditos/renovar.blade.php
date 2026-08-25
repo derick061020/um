@@ -65,6 +65,21 @@
     </section>
 
     @if ($calendario)
+        <section class="tarjeta" style="margin-bottom:1.5rem; border-color:var(--salvia);">
+            <header><h2>Resumen de la renovación</h2></header>
+            <div class="relleno">
+                <div class="rejilla rejilla-3">
+                    <div class="dato"><dt>Pago en el que va</dt><dd>{{ $credito->semanaActual() }} de {{ $credito->num_semanas }}</dd></div>
+                    <div class="dato"><dt>Saldo del préstamo anterior</dt><dd>{{ Dinero::pesos($saldo) }}</dd></div>
+                    <div class="dato"><dt>Monto del nuevo préstamo</dt><dd>{{ Dinero::pesos(App\Support\Dinero::aCentavos($datos['monto_prestado'])) }}</dd></div>
+                    <div class="dato"><dt>Se descuenta para liquidar</dt><dd style="color:var(--riesgo);">− {{ Dinero::pesos($descuento) }}</dd></div>
+                    <div class="dato"><dt>Neto que recibe la clienta</dt><dd style="font-weight:700; color:var(--patrimonio); font-size:1.1rem;">{{ Dinero::pesos($neto) }}</dd></div>
+                    <div class="dato"><dt>Entrega de la renovación</dt><dd>{{ ucfirst(Fechas::larga($entrega)) }}</dd></div>
+                    <div class="dato"><dt>Primer abono nuevo</dt><dd>{{ ucfirst(Fechas::larga($calendario[0]['fecha'])) }}</dd></div>
+                </div>
+            </div>
+        </section>
+
         <section class="tarjeta" style="margin-bottom:1.5rem;">
             <header>
                 <h2>Calendario del nuevo crédito</h2>

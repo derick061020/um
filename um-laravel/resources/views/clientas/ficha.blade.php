@@ -197,6 +197,23 @@
             </form>
         </section>
     @endcan
+
+    @can('correcciones.aplicar')
+        <section class="tarjeta no-imprimir" style="margin-top:1.5rem; border-color:rgba(156,47,47,.25);">
+            <header><h2 style="color:var(--riesgo);">Borrar clienta</h2></header>
+            <div class="relleno">
+                <p class="ayuda" style="margin-top:0;">
+                    Solo se puede borrar si la clienta no tiene créditos. Si ya tuvo créditos, para no
+                    perder el historial, desactívala en sus datos en vez de borrarla.
+                </p>
+                <form method="POST" action="{{ route('clientas.borrar', $clienta) }}"
+                      onsubmit="return confirm('¿BORRAR a {{ $clienta->nombre }}? Esta acción no se puede deshacer.')">
+                    @csrf @method('DELETE')
+                    <button type="submit" class="btn-peligro">Borrar clienta</button>
+                </form>
+            </div>
+        </section>
+    @endcan
 @endsection
 
 @push('scripts')

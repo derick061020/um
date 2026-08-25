@@ -19,7 +19,12 @@ class ClientaController extends Controller
         $busqueda = trim((string) $request->query('q', ''));
         $grupoId = $request->query('grupo');
 
-        $consulta = Cliente::query()->with('grupo:id,nombre')->withCount('creditos');
+        // El tarjetero se organiza por grupo, fecha del préstamo y tarjeta, no
+        // por orden alfabético: así se ve de un vistazo quiénes entraron juntas
+        // y en qué semana va cada tarjeta.
+        $consulta = Cliente::query()
+            ->with(['grupo:id,nombre', 'creditoActivo.abonos'])
+            ->withCount('creditos');
 
         if ($busqueda !== '') {
             $consulta->where(function ($q) use ($busqueda) {
@@ -27,8 +32,9 @@ class ClientaController extends Controller
                     ->orWhere('telefono', 'like', "%$busqueda%")
                     ->orWhere('aval_nombre', 'like', "%$busqueda%");
 
-                if (ctype_digit($busqueda)) {
-                    $q->orWhere('folio', (int) $busqueda);
+                $digitos = preg_replace('/\D/', '', $busqueda);
+                if ($digitos !== '') {
+                    $q->orWhere('folio', (int) $digitos);
                 }
             });
         }
@@ -37,8 +43,18 @@ class ClientaController extends Controller
             $consulta->where('grupo_id', $grupoId);
         }
 
+        $sub = 'select %s from creditos c where c.cliente_id = clientes.id'
+            .' and c.estado in ("ACTIVO","VENCIDO") order by c.fecha_entrega desc limit 1';
+
+        $consulta
+            ->orderBy('grupo_id')
+            ->orderByRaw('('.sprintf($sub, 'c.fecha_entrega').') is null')  // con crédito primero
+            ->orderByRaw('('.sprintf($sub, 'c.fecha_entrega').')')          // por fecha de préstamo
+            ->orderByRaw('('.sprintf($sub, 'c.folio').')')                  // por tarjeta
+            ->orderBy('nombre');
+
         return view('clientas.index', [
-            'clientas' => $consulta->orderBy('nombre')->paginate(30)->withQueryString(),
+            'clientas' => $consulta->paginate(40)->withQueryString(),
             'grupos' => Grupo::where('activo', true)->orderBy('nombre')->get(),
             'busqueda' => $busqueda,
             'grupoId' => $grupoId,
@@ -104,6 +120,37 @@ class ClientaController extends Controller
         ]);
 
         return back()->with('exito', 'Datos actualizados.');
+    }
+
+    /**
+     * Borrar una clienta. Para proteger el historial financiero, solo se
+     * permite si NO tiene créditos. Si los tiene, se desactiva en su lugar.
+     */
+    public function borrar(Cliente $cliente): RedirectResponse
+    {
+        if ($cliente->creditos()->count() > 0) {
+            return back()->withErrors(['clienta' =>
+                'No se puede borrar a «'.$cliente->nombre.'» porque tiene créditos en su historial. '
+                .'Desactívala en su lugar (en sus datos) para no perder la información.',
+            ]);
+        }
+
+        $nombre = $cliente->nombre;
+        // Al borrar, se llevan también sus documentos escaneados del expediente.
+        foreach ($cliente->documentos as $doc) {
+            \Illuminate\Support\Facades\Storage::disk('local')->delete($doc->archivo);
+        }
+        $cliente->delete();
+
+        Bitacora::registrar([
+            'usuario_id' => Auth::id(),
+            'accion' => 'clienta.borrar',
+            'entidad' => 'cliente',
+            'entidad_id' => (string) $cliente->id,
+            'detalle' => ['nombre' => $nombre],
+        ]);
+
+        return redirect()->route('clientas')->with('exito', 'Clienta '.$nombre.' borrada.');
     }
 
     /** @return array<string, mixed> */

@@ -161,6 +161,53 @@
                 </div>
             @endif
 
+            {{-- Resumen del cierre (solo admin): dinero físico separado de lo
+                 liquidado por renovación, para que cuadre. --}}
+            @if ($puedeCerrar && ($c = $fila['cierre']))
+                <div class="relleno" style="border-top:1px solid var(--niebla);">
+                    <h3 style="margin:0 0 .75rem; font-family:var(--serif); font-weight:400; color:var(--patrimonio);">Resumen del cierre</h3>
+                    <div class="tabla-envoltura">
+                        <table class="tabla">
+                            <tbody>
+                            <tr><td>Total que debía cobrar</td><td class="num">{{ Dinero::pesos($c['debe_cobrar']) }}</td></tr>
+                            <tr><td>Cobranza normal recibida</td><td class="num">{{ Dinero::pesos($c['cobrado_normal']) }}</td></tr>
+                            <tr><td>Adelantos recibidos</td><td class="num">{{ Dinero::pesos($c['adelantos']) }}</td></tr>
+                            <tr><td>Renovaciones realizadas</td><td class="num">{{ $c['renovaciones_count'] }}</td></tr>
+                            <tr style="color:var(--crecimiento);"><td>Saldos liquidados por renovación <span class="apagado">(no es efectivo)</span></td><td class="num">{{ Dinero::pesos($c['saldos_liquidados']) }}</td></tr>
+                            <tr><td>Neto entregado en préstamos renovados</td><td class="num">{{ Dinero::pesos($c['neto_renovados']) }}</td></tr>
+                            <tr><td>Faltantes</td><td class="num {{ $c['faltantes'] > 0 ? 'valor-rojo' : '' }}">{{ Dinero::pesos($c['faltantes']) }}</td></tr>
+                            <tr style="border-top:2px solid var(--niebla); font-weight:700;"><td>Total de dinero físico que entrega el supervisor</td><td class="num">{{ Dinero::pesos($c['entrego_fisico']) }}</td></tr>
+                            <tr style="font-weight:700; color:{{ $c['diferencia'] < 0 ? 'var(--riesgo)' : 'var(--crecimiento)' }};"><td>Diferencia final del cierre</td><td class="num">{{ ($c['diferencia'] >= 0 ? '+' : '−').Dinero::pesos(abs($c['diferencia'])) }}</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="ayuda" style="margin-top:.5rem;">
+                        Los saldos liquidados por renovación no cuentan como dinero físico: se descontaron del préstamo nuevo.
+                    </p>
+
+                    @if ($c['renovaciones']->isNotEmpty())
+                        <h3 style="margin:1.25rem 0 .5rem; font-family:var(--serif); font-weight:400; color:var(--patrimonio);">
+                            Renovaciones de esta semana
+                        </h3>
+                        <div class="tabla-envoltura">
+                            <table class="tabla">
+                                <thead><tr><th>Clienta</th><th class="num">Nuevo préstamo</th><th class="num">Liquidado</th><th class="num">Neto entregado</th></tr></thead>
+                                <tbody>
+                                @foreach ($c['renovaciones'] as $r)
+                                    <tr>
+                                        <td>{{ $r->cliente->nombre ?? '—' }}</td>
+                                        <td class="num">{{ Dinero::pesos($r->monto_prestado) }}</td>
+                                        <td class="num">{{ Dinero::pesos($r->descuento_renovacion) }}</td>
+                                        <td class="num" style="font-weight:600;">{{ Dinero::pesos($r->netoEntregado()) }}</td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+                </div>
+            @endif
+
             @if ($puedeCerrar && $e->exists)
                 <div class="relleno no-imprimir" style="border-top:1px solid var(--niebla); display:flex; gap:.75rem;">
                     @if (! $cerrada)

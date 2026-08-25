@@ -59,7 +59,13 @@ class EntregaController extends Controller
                 ->sortBy(fn ($a) => $a->credito->cliente->nombre ?? '')
                 ->values();
 
-            return ['grupo' => $g, 'entrega' => $entrega, 'clientas' => $clientas];
+            // Resumen del cierre (solo lo ocupa el admin): separa el dinero
+            // físico de lo liquidado por renovación.
+            $cierre = ($usuario->puede('cierre.cerrar'))
+                ? $servicio->resumenCierre($g->id, $sabado)
+                : null;
+
+            return ['grupo' => $g, 'entrega' => $entrega, 'clientas' => $clientas, 'cierre' => $cierre];
         });
 
         return view('entregas.index', [

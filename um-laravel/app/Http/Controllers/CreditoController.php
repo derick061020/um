@@ -148,12 +148,13 @@ class CreditoController extends Controller
 
     public function renovarForm(Credito $credito, CreditoService $servicio): View|RedirectResponse
     {
-        if (! $credito->estaAbierto()) {
-            return redirect()->route('creditos.ficha', $credito)
-                ->withErrors(['credito' => 'Solo se puede renovar un crédito abierto.']);
-        }
-
         $credito->load(['cliente', 'abonos']);
+
+        if (! $credito->puedeRenovar()) {
+            return redirect()->route('creditos.ficha', $credito)->withErrors(['credito' =>
+                'La renovación solo se activa en el último pago. A esta clienta le faltan '
+                .$credito->pendientes().' pagos por cubrir.']);
+        }
 
         return view('creditos.renovar', [
             'credito' => $credito,
@@ -164,9 +165,11 @@ class CreditoController extends Controller
 
     public function renovar(Request $request, Credito $credito, CreditoService $servicio): View|RedirectResponse
     {
-        if (! $credito->estaAbierto()) {
-            return redirect()->route('creditos.ficha', $credito)
-                ->withErrors(['credito' => 'Solo se puede renovar un crédito abierto.']);
+        $credito->load(['cliente', 'abonos']);
+
+        if (! $credito->puedeRenovar()) {
+            return redirect()->route('creditos.ficha', $credito)->withErrors(['credito' =>
+                'La renovación solo se activa en el último pago.']);
         }
 
         $datos = $request->validate([
@@ -197,17 +200,19 @@ class CreditoController extends Controller
         $calendario = Fechas::generarCalendario($entrega, $semanas);
         $montos = Dinero::repartirAbonos($total, $semanas);
 
-        // Sin confirmar: se muestra el calendario del nuevo crédito para revisarlo.
+        // Sin confirmar: se muestra el resumen y el calendario del nuevo crédito.
         if (! $request->boolean('confirmar')) {
-            $credito->load(['cliente', 'abonos']);
+            $saldo = $servicio->saldoPendiente($credito);
 
             return view('creditos.renovar', [
                 'credito' => $credito,
-                'saldo' => $servicio->saldoPendiente($credito),
+                'saldo' => $saldo,
                 'calendario' => $calendario,
                 'montos' => $montos,
                 'entrega' => $entrega,
                 'datos' => $datos,
+                'descuento' => $saldo,               // se descuenta para liquidar el anterior
+                'neto' => max(0, $prestado - $saldo), // lo que la clienta recibe en efectivo
             ]);
         }
 
@@ -229,12 +234,14 @@ class CreditoController extends Controller
                 'anterior' => $res['anterior']->folio,
                 'nuevo' => $res['nuevo']->folio,
                 'saldo_liquidado' => Dinero::pesos($res['saldo_liquidado']),
+                'neto_entregado' => Dinero::pesos($res['neto_entregado']),
             ],
         ]);
 
         return redirect()->route('creditos.ficha', $res['nuevo'])->with('exito',
             'Renovación hecha: el crédito '.$res['anterior']->folioFormateado()
-            .' quedó liquidado y arranca el '.$res['nuevo']->folioFormateado().' en la semana 1.');
+            .' quedó liquidado y arranca el '.$res['nuevo']->folioFormateado().' en la semana 1. '
+            .'La clienta recibió '.Dinero::pesos($res['neto_entregado']).' netos.');
     }
 
     // --- Corrección del admin ----------------------------------------------
@@ -281,6 +288,48 @@ class CreditoController extends Controller
 
         return redirect()->route('creditos.ficha', $credito)
             ->with('exito', 'Crédito corregido. El cambio quedó registrado en la bitácora.');
+    }
+
+    /**
+     * Cambia el abono semanal desde una semana en adelante. Los abonos ya
+     * cobrados conservan su monto; el total de la tarjeta se recalcula solo.
+     */
+    public function ajustarAbono(Request $request, Credito $credito, CreditoService $servicio): RedirectResponse
+    {
+        $datos = $request->validate([
+            'nuevo_abono' => ['required', 'string'],
+            'desde_semana' => ['required', 'integer', 'min:1', 'max:'.$credito->num_semanas],
+            'motivo' => ['required', 'string', 'min:4', 'max:300'],
+        ], [], ['nuevo_abono' => 'nuevo abono', 'desde_semana' => 'semana', 'motivo' => 'motivo']);
+
+        try {
+            $nuevo = Dinero::aCentavos($datos['nuevo_abono']);
+        } catch (\InvalidArgumentException $e) {
+            return back()->withErrors(['nuevo_abono' => $e->getMessage()]);
+        }
+
+        try {
+            $res = $servicio->ajustarAbono($credito->id, (int) $datos['desde_semana'], $nuevo, Auth::id());
+        } catch (\RuntimeException $e) {
+            return back()->withErrors(['nuevo_abono' => $e->getMessage()]);
+        }
+
+        Bitacora::registrar([
+            'usuario_id' => Auth::id(),
+            'accion' => 'credito.ajustar_abono',
+            'entidad' => 'credito',
+            'entidad_id' => (string) $credito->id,
+            'detalle' => [
+                'motivo' => $datos['motivo'],
+                'desde_semana' => (int) $datos['desde_semana'],
+                'antes' => ['abono' => Dinero::pesos($res['antes']['abono_semanal']), 'total' => Dinero::pesos($res['antes']['monto_total'])],
+                'despues' => ['abono' => Dinero::pesos($res['despues']['abono_semanal']), 'total' => Dinero::pesos($res['despues']['monto_total'])],
+            ],
+        ]);
+
+        return redirect()->route('creditos.ficha', $credito)->with('exito',
+            'Abono actualizado desde la semana '.$datos['desde_semana']
+            .'. Nuevo total de la tarjeta: '.Dinero::pesos($res['despues']['monto_total']).'.');
     }
 
     /** @return array<string, mixed> */

@@ -36,6 +36,14 @@ class Cliente extends Model
         return $this->hasMany(Credito::class, 'cliente_id');
     }
 
+    /** El crédito abierto (activo o vencido) para el tarjetero. Hay uno a lo sumo. */
+    public function creditoActivo(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Credito::class, 'cliente_id')
+            ->whereIn('estado', ['ACTIVO', 'VENCIDO'])
+            ->orderByDesc('fecha_entrega');
+    }
+
     public function documentos(): HasMany
     {
         return $this->hasMany(Documento::class, 'cliente_id');

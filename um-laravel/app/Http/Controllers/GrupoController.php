@@ -67,6 +67,70 @@ class GrupoController extends Controller
         return back()->with('exito', 'Grupo actualizado.');
     }
 
+    /** Archivar (desactivar) un grupo sin perder su historial. */
+    public function archivar(Grupo $grupo): RedirectResponse
+    {
+        $grupo->update(['activo' => false]);
+
+        Bitacora::registrar([
+            'usuario_id' => Auth::id(),
+            'accion' => 'grupo.archivar',
+            'entidad' => 'grupo',
+            'entidad_id' => (string) $grupo->id,
+            'detalle' => ['nombre' => $grupo->nombre],
+        ]);
+
+        return back()->with('exito', 'Grupo '.$grupo->nombre.' archivado. Su historial se conserva.');
+    }
+
+    public function reactivar(Grupo $grupo): RedirectResponse
+    {
+        $grupo->update(['activo' => true]);
+
+        Bitacora::registrar([
+            'usuario_id' => Auth::id(),
+            'accion' => 'grupo.reactivar',
+            'entidad' => 'grupo',
+            'entidad_id' => (string) $grupo->id,
+            'detalle' => ['nombre' => $grupo->nombre],
+        ]);
+
+        return back()->with('exito', 'Grupo '.$grupo->nombre.' reactivado.');
+    }
+
+    /**
+     * Borrar un grupo definitivamente. Para proteger el historial financiero,
+     * solo se permite si el grupo NO tiene clientas, créditos ni entregas. Si
+     * tiene movimientos, se pide archivarlo en su lugar.
+     */
+    public function borrar(Grupo $grupo): RedirectResponse
+    {
+        $clientas = $grupo->clientas()->count();
+        $creditos = $grupo->creditos()->count();
+        $entregas = $grupo->entregas()->count();
+
+        if ($clientas > 0 || $creditos > 0 || $entregas > 0) {
+            return back()->withErrors(['grupo' =>
+                'No se puede borrar «'.$grupo->nombre.'» porque tiene historial ('
+                .$clientas.' clientas, '.$creditos.' créditos, '.$entregas.' entregas). '
+                .'Archívalo en su lugar para no perder la información.',
+            ]);
+        }
+
+        $nombre = $grupo->nombre;
+        $grupo->delete();
+
+        Bitacora::registrar([
+            'usuario_id' => Auth::id(),
+            'accion' => 'grupo.borrar',
+            'entidad' => 'grupo',
+            'entidad_id' => (string) $grupo->id,
+            'detalle' => ['nombre' => $nombre],
+        ]);
+
+        return back()->with('exito', 'Grupo '.$nombre.' borrado.');
+    }
+
     /** @return array<string, mixed> */
     private function validar(Request $request, ?int $ignorar = null): array
     {

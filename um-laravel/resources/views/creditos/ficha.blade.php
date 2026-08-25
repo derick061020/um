@@ -24,7 +24,7 @@
         </div>
         <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
             @can('renovaciones.procesar')
-                @if ($credito->estaAbierto())
+                @if ($credito->puedeRenovar())
                     <a href="{{ route('creditos.renovar', $credito) }}" class="btn-secundario">Renovar</a>
                 @endif
             @endcan
@@ -132,6 +132,42 @@
     </section>
 
     @can('correcciones.aplicar')
+        <section class="tarjeta no-imprimir" style="margin-top:1.5rem;">
+            <header><h2>Ajustar el abono semanal</h2></header>
+            <div class="relleno">
+                <p class="ayuda" style="margin-top:0;">
+                    Cambia la cantidad del abono a partir de una semana. Los abonos ya cobrados
+                    conservan su monto; el total de la tarjeta se recalcula solo.
+                </p>
+                <form method="POST" action="{{ route('creditos.ajustar_abono', $credito) }}"
+                      onsubmit="return confirm('¿Cambiar el abono desde la semana indicada?')">
+                    @csrf
+                    <div class="rejilla rejilla-3">
+                        <div class="grupo-campo">
+                            <label class="etiqueta-campo">Nuevo abono semanal</label>
+                            <input type="text" name="nuevo_abono" inputmode="decimal"
+                                   value="{{ Dinero::compacto($credito->abono_semanal) }}">
+                        </div>
+                        <div class="grupo-campo">
+                            <label class="etiqueta-campo">Aplicar desde la semana</label>
+                            <select name="desde_semana">
+                                @foreach ($credito->abonos as $a)
+                                    <option value="{{ $a->semana }}" @selected($a->estado !== 'PAGADO' && $loop->first)>
+                                        Semana {{ $a->semana }}@if ($a->estado === 'PAGADO') (ya cobrada) @endif
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="grupo-campo">
+                            <label class="etiqueta-campo">Motivo *</label>
+                            <input type="text" name="motivo" required minlength="4" placeholder="Ej.: se acordó bajar el abono">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">Aplicar nuevo abono</button>
+                </form>
+            </div>
+        </section>
+
         <section class="tarjeta no-imprimir" style="margin-top:1.5rem; border-color:rgba(156,47,47,.25);">
             <header><h2 style="color:var(--riesgo);">Corrección del admin</h2></header>
             <div class="relleno">

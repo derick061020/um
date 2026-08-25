@@ -24,6 +24,7 @@
                         <th>Encargada</th>
                         <th class="num">Clientas</th>
                         <th>Estado</th>
+                        @can('grupos.editar')<th class="no-imprimir">Acciones</th>@endcan
                     </tr>
                     </thead>
                     <tbody>
@@ -40,9 +41,32 @@
                             <td class="num">{{ $g->clientas_count }}</td>
                             <td>
                                 <span class="insignia {{ $g->activo ? 'insignia-verde' : 'insignia-neutro' }}">
-                                    {{ $g->activo ? 'activo' : 'inactivo' }}
+                                    {{ $g->activo ? 'activo' : 'archivado' }}
                                 </span>
                             </td>
+                            @can('grupos.editar')
+                                <td class="no-imprimir" style="white-space:nowrap;">
+                                    @if ($g->activo)
+                                        <form method="POST" action="{{ route('grupos.archivar', $g) }}" style="display:inline;"
+                                              onsubmit="return confirm('¿Archivar {{ $g->nombre }}? Deja de estar activo pero conserva su historial.')">
+                                            @csrf
+                                            <button type="submit" class="btn-secundario btn-chico">Archivar</button>
+                                        </form>
+                                    @else
+                                        <form method="POST" action="{{ route('grupos.reactivar', $g) }}" style="display:inline;">
+                                            @csrf
+                                            <button type="submit" class="btn-secundario btn-chico">Reactivar</button>
+                                        </form>
+                                    @endif
+                                    @can('correcciones.aplicar')
+                                        <form method="POST" action="{{ route('grupos.borrar', $g) }}" style="display:inline;"
+                                              onsubmit="return confirm('¿BORRAR {{ $g->nombre }} definitivamente? Solo se puede si no tiene historial. Esta acción no se puede deshacer.')">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="btn-peligro btn-chico">Borrar</button>
+                                        </form>
+                                    @endcan
+                                </td>
+                            @endcan
                         </tr>
                     @endforeach
                     </tbody>
