@@ -23,6 +23,8 @@
         .salto { page-break-before: always; }
 
         .encabezado { width: 100%; border-bottom: 1.5px solid #2f6b50; padding-bottom: 8px; }
+        .encabezado td { vertical-align: middle; }
+        .logo { height: 40px; }
         .institucion { font-size: 15px; font-weight: bold; color: #16402e; letter-spacing: 1px; }
         .rotulo { font-size: 8px; color: #2f6b50; letter-spacing: 2px; text-align: right; }
 
@@ -56,11 +58,18 @@
     </style>
 </head>
 <body>
+@php $logo = \App\Support\Marca::logoDataUri(); @endphp
 @foreach ($tarjetas as $t)
     <div class="tarjeta @unless ($loop->first) salto @endunless">
         <table class="encabezado">
             <tr>
-                <td class="institucion">{{ $institucion }}</td>
+                <td>
+                    @if ($logo)
+                        <img src="{{ $logo }}" class="logo" alt="{{ $institucion }}">
+                    @else
+                        <span class="institucion">{{ $institucion }}</span>
+                    @endif
+                </td>
                 <td class="rotulo">TARJETA DE CONTROL</td>
             </tr>
         </table>

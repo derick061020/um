@@ -9,6 +9,8 @@
         body { font-family: "DejaVu Sans", sans-serif; color: #252a27; margin: 0; font-size: 10px; }
 
         .encabezado { width: 100%; border-bottom: 1.5px solid #2f6b50; padding-bottom: 6px; margin-bottom: 10px; }
+        .encabezado td { vertical-align: middle; }
+        .logo { height: 42px; }
         .institucion { font-size: 15px; font-weight: bold; color: #16402e; letter-spacing: 1px; }
         .rotulo { font-size: 8px; color: #2f6b50; letter-spacing: 2px; text-align: right; }
         .subtitulo { font-size: 11px; color: #2f6b50; margin: 2px 0 0; }
@@ -33,9 +35,16 @@
     </style>
 </head>
 <body>
+    @php $logo = \App\Support\Marca::logoDataUri(); @endphp
     <table class="encabezado">
         <tr>
-            <td class="institucion">{{ $institucion }}</td>
+            <td>
+                @if ($logo)
+                    <img src="{{ $logo }}" class="logo" alt="{{ $institucion }}">
+                @else
+                    <span class="institucion">{{ $institucion }}</span>
+                @endif
+            </td>
             <td class="rotulo">HOJA DE ENTREGAS SEMANALES</td>
         </tr>
     </table>
